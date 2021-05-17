@@ -32,7 +32,7 @@ def search_anime_title(anime_search_text):
 
     return str(match[select])
 
-def get_episode_links(anime_link):
+def get_episode_list(anime_link):
     # initiating webdriver
     options = FirefoxOptions()
     options.add_argument("--headless")
@@ -59,8 +59,8 @@ def main():
     anime_link = base_url + tail
     #print(anime_link)
 
-    episodes = get_episode_links(anime_link)
-    print(episodes[0])
+    episode_list = get_episode_list(anime_link)
+    print(episode_list[0])
 
 
 
