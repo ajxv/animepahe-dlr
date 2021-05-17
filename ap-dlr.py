@@ -1,3 +1,4 @@
+from typing import ByteString
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -32,7 +33,7 @@ def search_anime_title(anime_search_text):
 
     return str(match[select])
 
-def get_episode_list(anime_link):
+def get_episode_links(anime_link):
     # initiating webdriver
     options = FirefoxOptions()
     options.add_argument("--headless")
@@ -45,7 +46,10 @@ def get_episode_list(anime_link):
     #anime_page = requests.get(anime_link, headers=request_header)
     anime_page_soup = BeautifulSoup(anime_page, 'html.parser')
 
-    return [a for a in anime_page_soup.find_all('a', {"class" : "play"})]
+    driver.close() #close all tabs
+    driver.quit() #closes firefox-headless after usage
+
+    return [base_url + a['href'] for a in anime_page_soup.find_all('a', {"class" : "play"})]
 
 
 def main():
@@ -59,8 +63,8 @@ def main():
     anime_link = base_url + tail
     #print(anime_link)
 
-    episode_list = get_episode_list(anime_link)
-    print(episode_list[0])
+    episode_links = get_episode_links(anime_link) 
+    print(episode_links[0])
 
 
 
