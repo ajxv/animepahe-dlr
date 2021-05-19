@@ -20,7 +20,7 @@ options.add_argument("--headless")
 fxprofile = webdriver.FirefoxProfile()
 fxprofile.set_preference('browser.download.folderList', 2) # custom location
 fxprofile.set_preference("browser.download.manager.showWhenStarting", False)
-fxprofile.set_preference("browser.download.dir",'D:\\WorkSpace\\animepahe-dlr\\Downloads\\')
+fxprofile.set_preference("browser.download.dir",'<download-dir-path-goes-here>') #-INCOMPLETE
 fxprofile.set_preference("browser.helperApps.neverAsk.saveToDisk", "video/mp4")
 
 #initiate driver
