@@ -6,6 +6,9 @@ import time
 import sys
 import subprocess
 import re
+import os
+
+script_dir = os.path.dirname(__file__).replace("'", "") #path where script is stored
 
 request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'}
 base_url = "https://animepahe.com"
@@ -24,9 +27,9 @@ options.add_argument("--headless")
 
 #initiate driver
 driver = webdriver.Firefox(options=options)
-driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extensions\\universal-bypass.xpi', temporary=True)
-driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extensions\\uBlock0@raymondhill.net.xpi', temporary=True)
-driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extensions\\mozilla_cc3@internetdownloadmanager.com.xpi', temporary=True) # use idm if available
+driver.install_addon(script_dir + r'\extensions\universal-bypass.xpi', temporary=True)
+driver.install_addon(script_dir + r'\extensions\uBlock0@raymondhill.net.xpi', temporary=True)
+driver.install_addon(script_dir + r'\extensions\mozilla_cc3@internetdownloadmanager.com.xpi', temporary=True) # use idm if available
 
 
 def get_anime_list():
@@ -38,7 +41,11 @@ def get_anime_list():
 
 def search_anime_title(anime_search_text):
     # search for anime title
-    print("###--(Searching for anime..)--###") ######### delete after debug
+    print('''
+    ----------------------------------------
+            Searching for anime..
+    ----------------------------------------
+    ''')
     anime_list = get_anime_list()
 
     # store a list of matching titles
@@ -53,7 +60,11 @@ def search_anime_title(anime_search_text):
     return str(matching_titles[select])
 
 def get_episode_links(anime_link):
-    print("###--(getting episode links...)--###") ######### delete after debug
+    print('''
+    ----------------------------------------
+            Getting episode links...
+    ----------------------------------------
+    ''')
 
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(anime_link)
@@ -97,7 +108,7 @@ def download(download_link):
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(download_link)
     time.sleep(4) #wait for elements to load
-    print("- DOWNLOADING : " + driver.title.replace(" :: Kwik",''))
+    print("[#] Downloading : " + driver.title.replace(" :: Kwik",''))
     driver.find_element_by_class_name('button').click()
 
     time.sleep(3) # wait for download to start
@@ -122,14 +133,14 @@ def main():
     episode_links = get_episode_links(anime_link)
 
     if not episode_links:
-        gracious_exit("Couldln't finding any episodes")
-        
+        gracious_exit("Couldln't find any episode links")
+
     for ep_link in episode_links:
         download_link = get_download_link(ep_link, qualtiy)
         download(download_link)
 
 
-    gracious_exit("All downloads Started !!") #exits graciously
+    gracious_exit("\nAll Downloads Started !!") #exits graciously
     
 
 
@@ -146,7 +157,7 @@ if __name__ == "__main__":
         taskkill = 'taskkill /f '+''.join(["/pid "+f+" " for f in newFFIDs]).strip()
         subprocess.check_output(taskkill.split(), shell=True)
 
-        print("KeyboardInterrupt : Exiting with dirty hands..")
-        print("You may experience tab-crash in your firefox sessions")
+        print("\nKeyboardInterrupt : Exiting with dirty hands..")
+        print("You may experience tab-crash in your open firefox sessions")
     except:
         gracious_exit("Caught an Unexpected Error : Exiting Graciously..")
