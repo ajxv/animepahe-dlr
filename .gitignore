@@ -1,2 +1,5 @@
-geckodriver.log
+#ignore logs
+*.log
+
+#vscode-settings
 .vscode/
