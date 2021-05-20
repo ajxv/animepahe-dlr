@@ -20,7 +20,7 @@ currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
 
 #firefox-webdriver options
 options = FirefoxOptions()
-#options.add_argument("--headless")
+options.add_argument("--headless")
 
 #configuring firefox-profile
 fxprofile = webdriver.FirefoxProfile()
@@ -141,9 +141,12 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
+
+        #find new firefox processes
         tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
         newFFIDs = set(re.findall(r"firefox.exe\s+(\d+)", tasklist)).difference(currentFFIDs)
 
+        #kills spawned firefox drivers -- (may also crash some tabs in other firefox sessions)
         taskkill = 'taskkill /f '+''.join(["/pid "+f+" " for f in newFFIDs]).strip()
         subprocess.check_output(taskkill.split(), shell=True)
 
