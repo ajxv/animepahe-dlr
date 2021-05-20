@@ -22,18 +22,11 @@ currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
 options = FirefoxOptions()
 options.add_argument("--headless")
 
-#configuring firefox-profile
-fxprofile = webdriver.FirefoxProfile()
-fxprofile.set_preference('browser.download.folderList', 2) # custom location
-fxprofile.set_preference("browser.download.manager.showWhenStarting", False)
-fxprofile.set_preference("browser.download.dir",'<download-dir-path-goes-here>') #-INCOMPLETE
-fxprofile.set_preference("browser.helperApps.neverAsk.saveToDisk", "video/mp4")
-
 #initiate driver
-driver = webdriver.Firefox(firefox_profile=fxprofile, options=options)
-driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extension\\universal-bypass.xpi', temporary=True)
-driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extension\\uBlock0@raymondhill.net.xpi', temporary=True)
-driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extension\\mozilla_cc3@internetdownloadmanager.com.xpi', temporary=True) # use idm if available
+driver = webdriver.Firefox(options=options)
+driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extensions\\universal-bypass.xpi', temporary=True)
+driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extensions\\uBlock0@raymondhill.net.xpi', temporary=True)
+driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extensions\\mozilla_cc3@internetdownloadmanager.com.xpi', temporary=True) # use idm if available
 
 
 def get_anime_list():
@@ -128,6 +121,9 @@ def main():
 
     episode_links = get_episode_links(anime_link)
 
+    if not episode_links:
+        gracious_exit("Couldln't finding any episodes")
+        
     for ep_link in episode_links:
         download_link = get_download_link(ep_link, qualtiy)
         download(download_link)
@@ -153,4 +149,4 @@ if __name__ == "__main__":
         print("KeyboardInterrupt : Exiting with dirty hands..")
         print("You may experience tab-crash in your firefox sessions")
     except:
-        gracious_exit("Error Caught : Exiting Graciously..")
+        gracious_exit("Caught an Unexpected Error : Exiting Graciously..")
