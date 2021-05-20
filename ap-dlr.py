@@ -4,6 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import time
 import sys
+import subprocess
+import re
 
 request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'}
 base_url = "https://animepahe.com"
@@ -12,9 +14,13 @@ index_url = "https://animepahe.com/anime"
 index_page = requests.get(index_url, headers=request_header)
 index_soup = BeautifulSoup(index_page.content, 'html.parser')
 
+# get list of currently running firefox processes (for in case -- keyboardInterrupt occurs)
+tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
+currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
+
 #firefox-webdriver options
 options = FirefoxOptions()
-options.add_argument("--headless")
+#options.add_argument("--headless")
 
 #configuring firefox-profile
 fxprofile = webdriver.FirefoxProfile()
@@ -28,7 +34,6 @@ driver = webdriver.Firefox(firefox_profile=fxprofile, options=options)
 driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extension\\universal-bypass.xpi', temporary=True)
 driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extension\\uBlock0@raymondhill.net.xpi', temporary=True)
 driver.install_addon('D:\\WorkSpace\\animepahe-dlr\\extension\\mozilla_cc3@internetdownloadmanager.com.xpi', temporary=True) # use idm if available
-
 
 
 def get_anime_list():
@@ -92,7 +97,7 @@ def get_download_link(episode_link, quality):
     if "download_link" in locals():
         return download_link
     else:
-        exit_script("Error while getting download_link :(")
+        gracious_exit("Error while getting download_link :(") #exits graciously
 
 def download(download_link):
 
@@ -104,7 +109,7 @@ def download(download_link):
 
     time.sleep(3) # wait for download to start
 
-def exit_script(msg):
+def gracious_exit(msg):
     driver.quit()
     sys.exit(msg)
 
@@ -128,9 +133,21 @@ def main():
         download(download_link)
 
 
-    exit_script("All downloads Started !!") #exits script with custom text after closing open webdrivers
+    gracious_exit("All downloads Started !!") #exits graciously
     
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
+        newFFIDs = set(re.findall(r"firefox.exe\s+(\d+)", tasklist)).difference(currentFFIDs)
+
+        taskkill = 'taskkill /f '+''.join(["/pid "+f+" " for f in newFFIDs]).strip()
+        subprocess.check_output(taskkill.split(), shell=True)
+
+        print("KeyboardInterrupt : Exiting with dirty hands..")
+        print("You may experience tab-crash in your firefox sessions")
+    except:
+        gracious_exit("Error Caught : Exiting Graciously..")
