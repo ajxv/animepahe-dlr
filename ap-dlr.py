@@ -2,13 +2,20 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.common.exceptions import WebDriverException
 import time
 import sys
 import subprocess
 import re
 import os
+from utils import gecko_installer
 
-script_dir = os.path.dirname(__file__).replace("'", "") #path where script is stored
+script_dir = os.path.dirname(__file__) #path where script is stored
+
+#add geckodriver path to PATH
+geckodriver_path = os.path.join(script_dir, r"utils\geckodriver")
+if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")):
+    os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
 
 request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'}
 base_url = "https://animepahe.com"
@@ -159,5 +166,11 @@ if __name__ == "__main__":
 
         print("\nKeyboardInterrupt : Exiting with dirty hands..")
         print("You may experience tab-crash in your open firefox sessions")
+    except WebDriverException as driverException:
+        if driverException == "Message: 'geckodriver' executable needs to be in PATH.":
+            gecko_installer.install() #installs and adds geckodriver to PATH
+            print("ExeceptionHandler: Please restart the Script")
+        else:
+            print(driverException)
     except:
         gracious_exit("Caught an Unexpected Error : Exiting Graciously..")

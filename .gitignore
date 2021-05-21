@@ -4,3 +4,9 @@ geckodriver.log
 
 #vscode-settings
 .vscode/
+
+#geckodriver
+geckodriver/
+
+#pycache
+__pycache__/
