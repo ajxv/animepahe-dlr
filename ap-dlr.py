@@ -167,7 +167,7 @@ if __name__ == "__main__":
         print("\nKeyboardInterrupt : Exiting with dirty hands..")
         print("You may experience tab-crash in your open firefox sessions")
     except WebDriverException as driverException:
-        if driverException == "Message: 'geckodriver' executable needs to be in PATH.":
+        if str(driverException) == "Message: 'geckodriver' executable needs to be in PATH.":
             gecko_installer.install() #installs and adds geckodriver to PATH
             print("ExeceptionHandler: Please restart the Script")
         else:
