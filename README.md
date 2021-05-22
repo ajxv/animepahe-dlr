@@ -20,6 +20,11 @@ A python script to automate downloads from animepahe.
 - Search for an anime.
 - Select the anime from search results to download all the episodes available under the selected anime.
 - Downloads are automatically captured by IDM.
+- **Downloading and Quality :**
+  - Downloads are set to be automatically captured by IDM. (so make sure IDM is installed)
+  - Currently the download quality priority is as follows : [720p, 576p, 480p]
+    - ie, downloader first checks for 720p video, if 720p is not available checks for 576p and so on.
+    - If you want to download anime in 1080p, open up 'ap-dlr.py' in any editor and add 1080p to the begining of the list defined using 'quality' variable in the code. 
 
 ## Notes
 - This script is made for Wndows os, if you want to use this in any other os's you may need to edit a few lines of codes.
