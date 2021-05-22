@@ -4,6 +4,9 @@ from bs4 import BeautifulSoup
 import platform
 import os
 from zipfile import ZipFile
+import shutil
+
+current_os = platform.system()
 
 def get_gecko_pkg_name():
     #navigate to latest geckodriver release page
@@ -15,12 +18,21 @@ def get_gecko_pkg_name():
     current_sys_arch = platform.architecture()[0] 
 
     #determine the system arch of file to download
-    if current_sys_arch == "64bit":
-        pkg_arch = "win64"
-    elif current_sys_arch == "32bit":
-        pkg_arch = "win32"
-
-    gecko_pkg_name = "geckodriver-" + latest_version + "-" + pkg_arch + ".zip"
+    if current_os == "Windows":
+        if current_sys_arch == "64bit":
+            pkg_arch = "win64"
+        elif current_sys_arch == "32bit":
+            pkg_arch = "win32"
+        
+        gecko_pkg_name = "geckodriver-" + latest_version + "-" + pkg_arch + ".zip"
+    
+    elif current_os == "Linux":
+        if current_sys_arch == "64bit":
+            pkg_arch = "linux64"
+        elif current_sys_arch == "32bit":
+            pkg_arch = "linux32"
+        
+        gecko_pkg_name = "geckodriver-" + latest_version + "-" + pkg_arch + ".tar.gz"
 
     return gecko_pkg_name
 
@@ -33,8 +45,8 @@ def create_folder():
     
     return new_folder #path to where the file will be downloaded
 
-def download_zip(download_path, gecko_dl_link, gecko_package_name):
-    #download the zip file
+def download_package(download_path, gecko_dl_link, gecko_package_name):
+    #download the package
     save_as = os.path.join(download_path, gecko_package_name) #save file as
 
     if not os.path.exists(save_as):
@@ -46,17 +58,28 @@ def download_zip(download_path, gecko_dl_link, gecko_package_name):
     return save_as #path to downloaded zip
 
 
-def extract_zip(gecko_zip, download_dir):
+def extract_zip(gecko_zip, geckodriver_dir):
     #extract zip file
-    gecko_exe = os.path.join(download_dir, r"geckodriver.exe")
+    gecko_file = os.path.join(geckodriver_dir, r"geckodriver.exe")
 
-    if os.path.exists(gecko_exe): #remove file if file already exists
-        os.remove(gecko_exe)
+    if os.path.exists(gecko_file): #remove file if file already exists
+        os.remove(gecko_file)
     
     with ZipFile(gecko_zip, 'r') as zip:
-        zip.extractall(download_dir) #extract content to download_dir
+        zip.extractall(geckodriver_dir) #extract content to geckodriver_dir
 
-    return gecko_exe
+    return gecko_file
+
+def extract_tar_gz(gecko_tar_gz, geckodriver_dir):
+    #extract *.tar.gz
+    gecko_file = os.path.join(geckodriver_dir, r"geckodriver")
+
+    if os.path.exists(gecko_file):
+        os.remove(gecko_file)
+
+    shutil.unpack_archive(gecko_tar_gz, geckodriver_dir) #extract *.tar.gz
+
+    return gecko_file
 
 def add_to_PATH(path_of_dir):
     if path_of_dir not in os.environ['PATH']:
@@ -67,9 +90,13 @@ def install():
     package_name = get_gecko_pkg_name()
     gecko_dl_link = "https://github.com/mozilla/geckodriver/releases/download/v0.29.1/" + package_name
 
-    download_dir = create_folder()
-    
-    gecko_zip = download_zip(download_dir, gecko_dl_link, package_name) #download zip file to download_path
-    gecko_exe = extract_zip(gecko_zip, download_dir) #extracts downloaded zip
+    geckodriver_dir = create_folder()
 
-    add_to_PATH(download_dir) #add geckodriver to path
+    gecko_pkg = download_package(geckodriver_dir, gecko_dl_link, package_name) #download zip file to download_path
+
+    if platform.system() == "Windows":
+        gecko_file = extract_zip(gecko_pkg, geckodriver_dir) #extracts downloaded zip
+    elif platform.system() == "Linux":
+        gecko_file = extract_tar_gz(gecko_pkg, geckodriver_dir) #extracts downloaded tar.gz file
+
+    add_to_PATH(geckodriver_dir) #add geckodriver to path
