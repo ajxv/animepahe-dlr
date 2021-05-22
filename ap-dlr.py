@@ -41,7 +41,7 @@ try:
 
 except WebDriverException as driverException:
     if "Message: 'geckodriver' executable needs to be in PATH." in str(driverException) :
-        gecko_installer.install() #installs and adds geckodriver to PATH
+        gecko_installer.install(script_dir) #installs and adds geckodriver to PATH
         driver = webdriver.Firefox(options=options)
     else:
         print(driverException)

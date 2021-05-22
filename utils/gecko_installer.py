@@ -35,10 +35,9 @@ def get_gecko_pkg_name():
 
     return gecko_pkg_name
 
-def create_folder():
+def create_folder(to_location):
     #make a new folder to download to (if one doesn't already exist)
-    current_dir = os.path.dirname(__file__)
-    new_folder = os.path.join(current_dir, r'geckodriver')
+    new_folder = os.path.join(to_location, r'geckodriver')
     if not os.path.exists(new_folder):
         os.makedirs(new_folder)
     
@@ -85,11 +84,11 @@ def add_to_PATH(path_of_dir):
         #print("Adding " + path_of_dir + " to $PATH")
         os.environ['PATH'] = os.environ['PATH'] + os.pathsep + path_of_dir
 
-def install():
+def install(to_location):
     package_name = get_gecko_pkg_name()
     gecko_dl_link = "https://github.com/mozilla/geckodriver/releases/download/v0.29.1/" + package_name
 
-    geckodriver_dir = create_folder()
+    geckodriver_dir = create_folder(to_location)
 
     gecko_pkg = download_package(geckodriver_dir, gecko_dl_link, package_name) #download zip file to download_path
 
