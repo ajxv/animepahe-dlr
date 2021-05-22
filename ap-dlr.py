@@ -8,12 +8,14 @@ import sys
 import subprocess
 import re
 import os
+import platform
 from utils import gecko_installer
 
 script_dir = os.path.dirname(__file__) #path where script is stored
+current_system_os = platform.system() #get current os
 
 #add geckodriver path to PATH
-geckodriver_path = os.path.join(script_dir, r"utils\geckodriver")
+geckodriver_path = os.path.join(script_dir, "utils" + os.path.sep + "geckodriver")
 if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")):
     os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
 
@@ -24,9 +26,10 @@ index_url = "https://animepahe.com/anime"
 index_page = requests.get(index_url, headers=request_header)
 index_soup = BeautifulSoup(index_page.content, 'html.parser')
 
-# get list of currently running firefox processes (for in case -- keyboardInterrupt occurs)
-tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
-currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
+if current_system_os == "Windows": # we need this only in windows
+    # get list of currently running firefox processes (for in case -- keyboardInterrupt occurs)
+    tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
+    currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
 
 #firefox-webdriver options
 options = FirefoxOptions()
@@ -44,9 +47,9 @@ except WebDriverException as driverException:
         print(driverException)
 
 #Load add-ons to webdriver
-driver.install_addon(script_dir + r'\extensions\universal-bypass.xpi', temporary=True)
-driver.install_addon(script_dir + r'\extensions\uBlock0@raymondhill.net.xpi', temporary=True)
-driver.install_addon(script_dir + r'\extensions\mozilla_cc3@internetdownloadmanager.com.xpi', temporary=True) # use idm if available
+driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "universal-bypass.xpi", temporary=True)
+driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
+driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
 
 def get_anime_list():
     # get list of anime titles in webpage
@@ -117,7 +120,7 @@ def get_download_link(episode_link, quality):
     if "download_link" in locals():
         return download_link
     else:
-        gracious_exit("Error while getting download_link :(") #exits graciously
+        graceful_exit("Error while getting download_link :(") #exit gracefully
 
 def download(download_link):
 
@@ -129,7 +132,7 @@ def download(download_link):
 
     time.sleep(3) # wait for download to start
 
-def gracious_exit(msg):
+def graceful_exit(msg):
     driver.quit()
     sys.exit(msg)
 
@@ -149,14 +152,14 @@ def main():
     episode_links = get_episode_links(anime_link)
 
     if not episode_links:
-        gracious_exit("Couldln't find any episode links")
+        graceful_exit("Couldln't find any episode links")
 
     for ep_link in episode_links:
         download_link = get_download_link(ep_link, qualtiy)
         download(download_link)
 
 
-    gracious_exit("\nAll Downloads Started !!") #exits graciously
+    graceful_exit("\nAll Downloads Started !!") #exit gracefully
     
 
 
@@ -165,16 +168,20 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
 
-        #find new firefox processes
-        tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
-        newFFIDs = set(re.findall(r"firefox.exe\s+(\d+)", tasklist)).difference(currentFFIDs)
+        if current_system_os == "Windows": #needed only if in windows
+            #find new firefox processes
+            tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
+            newFFIDs = set(re.findall(r"firefox.exe\s+(\d+)", tasklist)).difference(currentFFIDs)
 
-        #kills spawned firefox drivers -- (may also crash some tabs in other firefox sessions)
-        taskkill = 'taskkill /f '+''.join(["/pid "+f+" " for f in newFFIDs]).strip()
-        subprocess.check_output(taskkill.split(), shell=True)
+            #kills spawned firefox drivers -- (may also crash some tabs in other firefox sessions)
+            taskkill = 'taskkill /f '+''.join(["/pid "+f+" " for f in newFFIDs]).strip()
+            subprocess.check_output(taskkill.split(), shell=True)
 
-        print("\nKeyboardInterrupt : Exiting with dirty hands..")
-        print("You may experience a tab-crash in your open firefox sessions")
+            print("\nKeyboardInterrupt : Exiting with dirty hands..")
+            print("You may experience a tab-crash in your open firefox sessions")
+
+        else:
+            graceful_exit("KeyboardInterrupt : Exiting Gracefully..") #exit gracefully
     
     except:
-        gracious_exit("Caught an Unexpected Error : Exiting Graciously..")
+        graceful_exit("Caught an Unexpected Error : Exiting Gracefully..") #exit gracefully

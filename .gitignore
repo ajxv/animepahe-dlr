@@ -10,6 +10,3 @@ geckodriver/
 
 #pycache
 __pycache__/
-
-#tests-folder
-tests/
