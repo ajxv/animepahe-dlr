@@ -30,4 +30,4 @@ A python script to automate downloads from animepahe.
 ## Notes
 - Make sure you have python, Firefox and IDM installed before downloading the script.
 - This script is a work under progress and therefore may lack some features, please bear with it, and consider contributing to the code if you have any fixes or improvements :relaxed:. 
-- **In Windows** the webdriver if found to misbehave if the script is forced to exit using `ctrl^c. A good solution to this couldn't be found and a temporary fix have been implemented. And as such, please be noted that if you use ctrl^c to exit, your active firefox sessions or tabs have a good chance of crashing. (Note: ctrl^c doesn't have any issues in Linux)
+- **In Windows** the webdriver if found to misbehave if the script is forced to exit using `ctrl^c`. A good solution to this couldn't be found and a temporary fix have been implemented. And as such, please be noted that if you use ctrl^c to exit, your active firefox sessions or tabs have a good chance of crashing. (Note: ctrl^c doesn't have any issues in Linux)
