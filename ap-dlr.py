@@ -32,12 +32,21 @@ currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
 options = FirefoxOptions()
 options.add_argument("--headless")
 
-#initiate driver
-driver = webdriver.Firefox(options=options)
+try:
+    #initiate driver
+    driver = webdriver.Firefox(options=options)
+
+except WebDriverException as driverException:
+    if "Message: 'geckodriver' executable needs to be in PATH." in str(driverException) :
+        gecko_installer.install() #installs and adds geckodriver to PATH
+        driver = webdriver.Firefox(options=options)
+    else:
+        print(driverException)
+
+#Load add-ons to webdriver
 driver.install_addon(script_dir + r'\extensions\universal-bypass.xpi', temporary=True)
 driver.install_addon(script_dir + r'\extensions\uBlock0@raymondhill.net.xpi', temporary=True)
 driver.install_addon(script_dir + r'\extensions\mozilla_cc3@internetdownloadmanager.com.xpi', temporary=True) # use idm if available
-
 
 def get_anime_list():
     # get list of anime titles in webpage
@@ -165,12 +174,7 @@ if __name__ == "__main__":
         subprocess.check_output(taskkill.split(), shell=True)
 
         print("\nKeyboardInterrupt : Exiting with dirty hands..")
-        print("You may experience tab-crash in your open firefox sessions")
-    except WebDriverException as driverException:
-        if str(driverException) == "Message: 'geckodriver' executable needs to be in PATH.":
-            gecko_installer.install() #installs and adds geckodriver to PATH
-            print("ExeceptionHandler: Please restart the Script")
-        else:
-            print(driverException)
+        print("You may experience a tab-crash in your open firefox sessions")
+    
     except:
         gracious_exit("Caught an Unexpected Error : Exiting Graciously..")
