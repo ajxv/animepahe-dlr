@@ -124,7 +124,7 @@ def download(download_link):
     driver.get(download_link)
     time.sleep(4) #wait for elements to load
     print("[#] Downloading : " + driver.title.replace(" :: Kwik",''))
-    driver.find_element_by_xpath("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
+    driver.find_element_by_xpat("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
 
     time.sleep(3) # wait for download to start
 
