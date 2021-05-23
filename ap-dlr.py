@@ -11,7 +11,7 @@ import os
 import platform
 from utils import gecko_installer
 
-script_dir = os.path.dirname(__file__) #path where script is stored
+script_dir = os.path.dirname(os.path.abspath(__file__)) #path where script is stored
 current_system_os = platform.system() #get current os
 
 #add geckodriver path to PATH
@@ -33,7 +33,7 @@ if current_system_os == "Windows": # we need this only in windows
 
 #firefox-webdriver options
 options = FirefoxOptions()
-options.add_argument("--headless")
+#options.add_argument("--headless")
 
 try:
     #initiate driver
@@ -51,6 +51,12 @@ driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "un
 driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
 driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
 
+"""time.sleep(2)
+#clear all tab except main tab
+driver.switch_to.window(driver.window_handles[1]) #switch-to add-on confirmation tab
+driver.close() #close active tab
+driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
+"""
 def get_anime_list():
     # get list of anime titles in webpage
     anime_list = []
@@ -88,12 +94,7 @@ def get_episode_links(anime_link):
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(anime_link)
 
-    #clear all tab except main tab
-    driver.switch_to.window(driver.window_handles[1]) #switch-to add-on confirmation tab
-    driver.close() #close active tab
-    driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
-
-    time.sleep(1)
+    time.sleep(2)
 
     anime_page = driver.page_source
     anime_page_soup = BeautifulSoup(anime_page, 'html.parser')
@@ -181,7 +182,8 @@ if __name__ == "__main__":
             print("You may experience a tab-crash in your open firefox sessions")
 
         else:
-            graceful_exit("KeyboardInterrupt : Exiting Gracefully..") #exit gracefully
-    
+            graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
+    """
     except:
         graceful_exit("Caught an Unexpected Error : Exiting Gracefully..") #exit gracefully
+        """
