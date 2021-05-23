@@ -11,7 +11,15 @@ import os
 import platform
 from utils import gecko_installer
 
+#command-line args
+dl_with = "default"
+if len(sys.argv) > 1:
+    for arg in sys.argv:
+        if arg == "-d1":
+            dl_with = "firefox"
+
 script_dir = os.path.dirname(os.path.abspath(__file__)) #path where script is stored
+downloads_folder = os.path.expanduser("~")+"/Videos/"
 current_system_os = platform.system() #get current os
 
 #add geckodriver path to PATH
@@ -33,11 +41,18 @@ if current_system_os == "Windows": # we need this only in windows
 
 #firefox-webdriver options
 options = FirefoxOptions()
-options.add_argument("--headless")
+if dl_with == "default": options.add_argument("--headless")
+
+#configuring firefox-profile
+fxprofile = webdriver.FirefoxProfile()
+fxprofile.set_preference('browser.download.folderList', 2) # custom location
+fxprofile.set_preference("browser.download.manager.showWhenStarting", False)
+fxprofile.set_preference("browser.download.dir",downloads_folder) # set downloads folder
+fxprofile.set_preference("browser.helperApps.neverAsk.saveToDisk", "video/mp4")
 
 try:
     #initiate driver
-    driver = webdriver.Firefox(options=options)
+    driver = webdriver.Firefox(options=options, firefox_profile=fxprofile)
 
 except WebDriverException as driverException:
     if "Message: 'geckodriver' executable needs to be in PATH." in str(driverException) :
@@ -47,9 +62,11 @@ except WebDriverException as driverException:
         print(driverException)
 
 #Load add-ons to webdriver
+if dl_with == "default": #use idm if firefox is not explicitly selected using argv
+    driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
+
 driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "universal-bypass.xpi", temporary=True)
 driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
-driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
 
 
 def get_anime_list():
@@ -162,9 +179,11 @@ def main():
         download_link = get_download_link(ep_link, qualtiy)
         download(download_link)
 
+    if dl_with == "default":
+        graceful_exit("\nAll Downloads Started !!") #exit gracefully
+    else:
+        driver.get("about:downloads")
 
-    graceful_exit("\nAll Downloads Started !!") #exit gracefully
-    
 
 
 if __name__ == "__main__":
@@ -189,7 +208,3 @@ if __name__ == "__main__":
 
         else:
             graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
-    """
-    except:
-        graceful_exit("Caught an Unexpected Error : Exiting Gracefully..") #exit gracefully
-        """
