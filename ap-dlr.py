@@ -51,12 +51,7 @@ driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "un
 driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
 driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
 
-"""time.sleep(2)
-#clear all tab except main tab
-driver.switch_to.window(driver.window_handles[1]) #switch-to add-on confirmation tab
-driver.close() #close active tab
-driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
-"""
+
 def get_anime_list():
     # get list of anime titles in webpage
     anime_list = []
@@ -133,6 +128,14 @@ def download(download_link):
 
     time.sleep(3) # wait for download to start
 
+def tab_handler():
+    #clear all tab except main tab
+    driver.switch_to.window(driver.window_handles[1]) #switch-to add-on confirmation tab
+    driver.close() #close active tab
+    time.sleep(3)
+
+    driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
+
 def graceful_exit(msg):
     driver.quit()
     sys.exit(msg)
@@ -165,6 +168,9 @@ def main():
 
 
 if __name__ == "__main__":
+
+    tab_handler() #handles open tabs in webdriver
+
     try:
         main()
     except KeyboardInterrupt:
