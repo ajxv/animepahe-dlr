@@ -33,7 +33,7 @@ if current_system_os == "Windows": # we need this only in windows
 
 #firefox-webdriver options
 options = FirefoxOptions()
-#options.add_argument("--headless")
+options.add_argument("--headless")
 
 try:
     #initiate driver
