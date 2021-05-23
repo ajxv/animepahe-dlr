@@ -33,7 +33,7 @@ if current_system_os == "Windows": # we need this only in windows
 
 #firefox-webdriver options
 options = FirefoxOptions()
-options.add_argument("--headless")
+#options.add_argument("--headless")
 
 try:
     #initiate driver
@@ -124,7 +124,7 @@ def download(download_link):
     driver.get(download_link)
     time.sleep(4) #wait for elements to load
     print("[#] Downloading : " + driver.title.replace(" :: Kwik",''))
-    driver.find_element_by_class_name('button').click()
+    driver.find_element_by_xpath("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
 
     time.sleep(3) # wait for download to start
 
