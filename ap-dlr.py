@@ -11,7 +11,7 @@ import os
 import platform
 from utils import gecko_installer
 
-script_dir = os.path.dirname(__file__) #path where script is stored
+script_dir = os.path.dirname(os.path.abspath(__file__)) #path where script is stored
 current_system_os = platform.system() #get current os
 
 #add geckodriver path to PATH
@@ -51,6 +51,7 @@ driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "un
 driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
 driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
 
+
 def get_anime_list():
     # get list of anime titles in webpage
     anime_list = []
@@ -88,12 +89,7 @@ def get_episode_links(anime_link):
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(anime_link)
 
-    #clear all tab except main tab
-    driver.switch_to.window(driver.window_handles[1]) #switch-to add-on confirmation tab
-    driver.close() #close active tab
-    driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
-
-    time.sleep(1)
+    time.sleep(2)
 
     anime_page = driver.page_source
     anime_page_soup = BeautifulSoup(anime_page, 'html.parser')
@@ -128,9 +124,17 @@ def download(download_link):
     driver.get(download_link)
     time.sleep(4) #wait for elements to load
     print("[#] Downloading : " + driver.title.replace(" :: Kwik",''))
-    driver.find_element_by_class_name('button').click()
+    driver.find_element_by_xpath("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
 
     time.sleep(3) # wait for download to start
+
+def tab_handler():
+    #clear all tab except main tab
+    driver.switch_to.window(driver.window_handles[1]) #switch-to add-on confirmation tab
+    driver.close() #close active tab
+    time.sleep(3)
+
+    driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
 
 def graceful_exit(msg):
     driver.quit()
@@ -164,6 +168,9 @@ def main():
 
 
 if __name__ == "__main__":
+
+    tab_handler() #handles open tabs in webdriver
+
     try:
         main()
     except KeyboardInterrupt:
@@ -181,7 +188,8 @@ if __name__ == "__main__":
             print("You may experience a tab-crash in your open firefox sessions")
 
         else:
-            graceful_exit("KeyboardInterrupt : Exiting Gracefully..") #exit gracefully
-    
+            graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
+    """
     except:
         graceful_exit("Caught an Unexpected Error : Exiting Gracefully..") #exit gracefully
+        """
