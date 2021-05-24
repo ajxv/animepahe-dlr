@@ -23,7 +23,7 @@ downloads_folder = os.path.expanduser("~")+"/Videos/"
 current_system_os = platform.system() #get current os
 
 #add geckodriver path to PATH
-geckodriver_path = os.path.join(script_dir, "utils" + os.path.sep + "geckodriver")
+geckodriver_path = os.path.join(script_dir, "geckodriver")
 if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")):
     os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
 
