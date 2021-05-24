@@ -9,7 +9,6 @@ import re
 
 this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
 parent_dir = os.path.dirname(this_dir) #path to parent of current dir
-gecko_install_path = os.path.expanduser("~")
 current_system_os = platform.system() #get current os
 
 options = FirefoxOptions()
@@ -17,7 +16,7 @@ options.add_argument("--headless")
 
 #firefox-webdriver options
 options = FirefoxOptions()
-#options.add_argument("--headless")
+options.add_argument("--headless")
 
 if current_system_os == "Windows": # we need this only in windows
     # get list of currently running firefox processes (for in case -- keyboardInterrupt occurs)
@@ -30,7 +29,7 @@ try:
 
 except WebDriverException as driverException:
     if "Message: 'geckodriver' executable needs to be in PATH." in str(driverException) :
-        gecko_installer.install(gecko_install_path) #installs and adds geckodriver to PATH
+        gecko_installer.install(parent_dir) #installs and adds geckodriver to PATH
         driver = webdriver.Firefox(options=options)
     else:
         print(driverException)

@@ -15,7 +15,7 @@ else:
     download_with_idm = False
 
 this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
-downloads_folder = os.path.expanduser("~")+"/Videos/"
+downloads_folder = os.path.expanduser("~") + os.path.sep + "Videos" + os.path.sep
 current_system_os = platform.system() #get current os
 
 #enable this to download with idm if download with idm is selected
@@ -102,7 +102,7 @@ def get_download_link(episode_link, quality):
     else:
         graceful_exit("Error while getting download_link :(") #exit gracefully
 
-def download(download_link):
+def external_download(download_link):
 
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(download_link)
@@ -119,6 +119,14 @@ def tab_handler():
     time.sleep(3)
 
     driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
+
+def create_folder(in_location, foldername):
+    #make a new folder to download to (if one doesn't already exist)
+    new_folder = os.path.join(in_location, foldername)
+    if not os.path.exists(new_folder):
+        os.makedirs(new_folder)
+        
+    return new_folder
 
 def graceful_exit(msg):
     driver.quit()
@@ -145,13 +153,15 @@ def main():
     if download_with_idm:
         for ep_link in episode_links:
             download_link = get_download_link(ep_link, qualtiy)
-            download(download_link)
+            external_download(download_link)
             
         graceful_exit("\nAll Downloads Started !!") #exit gracefully
     else:
+        title = re.sub('[/\:*?<>|]', '_', anime_title).replace('°', '`')
+        anime_folder = create_folder(downloads_folder, title)
         for ep_link in episode_links:
             download_link = get_download_link(ep_link, qualtiy)
-            inbuilt_dlr.download(download_link, downloads_folder)
+            inbuilt_dlr.download(download_link, anime_folder)
 
         graceful_exit("\nAll Downloads Completed !!") #exit gracefully
 
@@ -180,3 +190,4 @@ if __name__ == "__main__":
     
     except Exception as e:
         graceful_exit("Oops! " + str(e.__class__) + " occured.")
+    

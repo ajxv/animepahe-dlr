@@ -9,20 +9,19 @@ from custom_modules.initiate_driver import driver
 def downloader(download_link, location):
     driver.get(download_link)
     time.sleep(5)
+
     download_page_source = driver.page_source
+    download_page_soup = BeautifulSoup(download_page_source, 'html.parser')
+
+    post_link = download_page_soup.find('form')['action']
+    token = download_page_soup.find('input', {'name': '_token'})['value']
 
     filename = driver.title.replace(" :: Kwik",'')
-    file = location + os.path.sep + filename
-
+    file = location + os.path.sep + filename #complete path to file
+    
     cookie = str(driver.get_cookie('kwik_session')['value'])
 
-    current_url = driver.current_url
-
-    download_page_soup = BeautifulSoup(download_page_source, 'html.parser')
-    post_link = download_page_soup.find('form')['action']
-
-
-    token = download_page_soup.find('input', {'name': '_token'})['value']
+    current_url = driver.current_url #for referer in request header
 
     header = {
         'Host': 'kwik.cx',
@@ -40,21 +39,24 @@ def downloader(download_link, location):
         'Upgrade-Insecure-Requests': '1'
     }
 
+    choice = "n"
     if os.path.exists(file):
         print("[#] " + filename)
         choice = input("File already exists. Re-download ? (y/n): ")
-        if choice.lower() == "y":
-
-            response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
     
-            with open(file, 'wb') as local_file:
-                total_length = int(response.headers.get('content-length'))
-                for chunk in progress.bar(response.iter_content(chunk_size=2048),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
-                    if chunk:
-                        local_file.write(chunk)
-                        local_file.flush()
-        else:
-            print("Skipping file..")
+    if choice.lower() == "n":
+
+        response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
+
+        with open(file, 'wb') as local_file:
+            total_length = int(response.headers.get('content-length'))
+            for chunk in progress.bar(response.iter_content(chunk_size=2048),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
+                if chunk:
+                    local_file.write(chunk)
+                    local_file.flush()
+    else:
+        print("Skipping file..")
+
 
 
 def download(download_link, location):
@@ -62,4 +64,7 @@ def download(download_link, location):
         downloader(download_link, location)
     except TypeError:
         print("Failed to start download! Retrying..")
+        download(download_link, location)
+    except Exception as e:
+        print(str(e.__class__) + " occured! Retrying..")
         download(download_link, location)
