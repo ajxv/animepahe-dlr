@@ -3,17 +3,26 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.common.exceptions import WebDriverException
 import os
 from custom_modules import gecko_installer
+import platform
+import subprocess
+import re
 
 this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
 parent_dir = os.path.dirname(this_dir) #path to parent of current dir
 gecko_install_path = os.path.expanduser("~")
+current_system_os = platform.system() #get current os
 
 options = FirefoxOptions()
 options.add_argument("--headless")
 
 #firefox-webdriver options
 options = FirefoxOptions()
-options.add_argument("--headless")
+#options.add_argument("--headless")
+
+if current_system_os == "Windows": # we need this only in windows
+    # get list of currently running firefox processes (for in case -- keyboardInterrupt occurs)
+    tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
+    currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
 
 try:
     #initiate driver

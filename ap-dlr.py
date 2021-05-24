@@ -7,7 +7,7 @@ import re
 import os
 import platform
 from custom_modules import inbuilt_dlr
-from custom_modules.initiate_driver import driver
+from custom_modules.initiate_driver import driver, currentFFIDs
 
 if len(sys.argv) > 1 and "-idm" in sys.argv:
     download_with_idm = True
@@ -34,11 +34,6 @@ base_url = "https://animepahe.com"
 index_url = "https://animepahe.com/anime"
 index_page = requests.get(index_url, headers=request_header)
 index_soup = BeautifulSoup(index_page.content, 'html.parser')
-
-if current_system_os == "Windows": # we need this only in windows
-    # get list of currently running firefox processes (for in case -- keyboardInterrupt occurs)
-    tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
-    currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
 
 
 def get_anime_list():
@@ -182,3 +177,6 @@ if __name__ == "__main__":
 
         else:
             graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
+    
+    except Exception as e:
+        graceful_exit("Oops! " + str(e.__class__) + " occured.")

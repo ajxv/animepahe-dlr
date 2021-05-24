@@ -1,3 +1,4 @@
+from genericpath import exists
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -39,14 +40,22 @@ def downloader(download_link, location):
         'Upgrade-Insecure-Requests': '1'
     }
 
-    response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
+    if os.path.exists(file):
+        print("[#] " + filename)
+        choice = input("File already exists. Re-download ? (y/n): ")
+        if choice.lower() == "y":
 
-    with open(file, 'wb') as local_file:
-        total_length = int(response.headers.get('content-length'))
-        for chunk in progress.bar(response.iter_content(chunk_size=2048),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
-            if chunk:
-                local_file.write(chunk)
-                local_file.flush()
+            response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
+    
+            with open(file, 'wb') as local_file:
+                total_length = int(response.headers.get('content-length'))
+                for chunk in progress.bar(response.iter_content(chunk_size=2048),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
+                    if chunk:
+                        local_file.write(chunk)
+                        local_file.flush()
+        else:
+            print("Skipping file..")
+
 
 def download(download_link, location):
     try:
