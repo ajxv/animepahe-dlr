@@ -1,30 +1,31 @@
 import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.common.exceptions import WebDriverException
 import time
 import sys
 import subprocess
 import re
 import os
 import platform
-from utils import gecko_installer
+from custom_modules import inbuilt_dlr
+from custom_modules.initiate_driver import driver
 
-#command-line args
-dl_with = "default"
-if len(sys.argv) > 1:
-    for arg in sys.argv:
-        if arg == "-d1":
-            dl_with = "firefox"
+if len(sys.argv) > 1 and "-idm" in sys.argv:
+    download_with_idm = True
+else:
+    download_with_idm = False
 
-script_dir = os.path.dirname(os.path.abspath(__file__)) #path where script is stored
+this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
 downloads_folder = os.path.expanduser("~")+"/Videos/"
 current_system_os = platform.system() #get current os
 
+#enable this to download with idm if download with idm is selected
+if download_with_idm:
+    driver.install_addon(this_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
+
+
 #add geckodriver path to PATH
-geckodriver_path = os.path.join(script_dir, "geckodriver")
-if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")):
+geckodriver_path = os.path.join(os.path.expanduser("~"), "geckodriver")
+if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")) or os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
     os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
 
 request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'}
@@ -38,35 +39,6 @@ if current_system_os == "Windows": # we need this only in windows
     # get list of currently running firefox processes (for in case -- keyboardInterrupt occurs)
     tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
     currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
-
-#firefox-webdriver options
-options = FirefoxOptions()
-if dl_with == "default": options.add_argument("--headless")
-
-#configuring firefox-profile
-fxprofile = webdriver.FirefoxProfile()
-fxprofile.set_preference('browser.download.folderList', 2) # custom location
-fxprofile.set_preference("browser.download.manager.showWhenStarting", False)
-fxprofile.set_preference("browser.download.dir",downloads_folder) # set downloads folder
-fxprofile.set_preference("browser.helperApps.neverAsk.saveToDisk", "video/mp4")
-
-try:
-    #initiate driver
-    driver = webdriver.Firefox(options=options, firefox_profile=fxprofile)
-
-except WebDriverException as driverException:
-    if "Message: 'geckodriver' executable needs to be in PATH." in str(driverException) :
-        gecko_installer.install(script_dir) #installs and adds geckodriver to PATH
-        driver = webdriver.Firefox(options=options)
-    else:
-        print(driverException)
-
-#Load add-ons to webdriver
-if dl_with == "default": #use idm if firefox is not explicitly selected using argv
-    driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
-
-driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "universal-bypass.xpi", temporary=True)
-driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
 
 
 def get_anime_list():
@@ -175,16 +147,18 @@ def main():
     if not episode_links:
         graceful_exit("Couldln't find any episode links")
 
-    for ep_link in episode_links:
-        download_link = get_download_link(ep_link, qualtiy)
-        download(download_link)
-
-    if dl_with == "default":
+    if download_with_idm:
+        for ep_link in episode_links:
+            download_link = get_download_link(ep_link, qualtiy)
+            download(download_link)
+            
         graceful_exit("\nAll Downloads Started !!") #exit gracefully
     else:
-        driver.get("about:downloads")
+        for ep_link in episode_links:
+            download_link = get_download_link(ep_link, qualtiy)
+            inbuilt_dlr.download(download_link, downloads_folder)
 
-
+        graceful_exit("\nAll Downloads Completed !!") #exit gracefully
 
 if __name__ == "__main__":
 
