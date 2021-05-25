@@ -7,7 +7,7 @@ import re
 import os
 import platform
 from custom_modules import inbuilt_dlr
-from custom_modules.initiate_driver import driver, currentFFIDs
+from custom_modules.initiate_driver import driver, currentFFIDs, WebDriverWait, EC, By
 
 if len(sys.argv) > 1 and "-idm" in sys.argv:
     download_with_idm = True
@@ -106,7 +106,10 @@ def external_download(download_link):
 
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(download_link)
-    time.sleep(4) #wait for elements to load
+    #time.sleep(4) 
+    #wait for elements to load
+    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//form[@method = 'POST']/button[contains(@class, 'button')]")))
+
     print("[#] Download Captured : " + driver.title.replace(" :: Kwik",''))
     driver.find_element_by_xpath("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
 
@@ -191,7 +194,7 @@ if __name__ == "__main__":
 
         else:
             graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
-    
+    """
     except Exception as e:
         graceful_exit("Oops! " + str(e.__class__) + " occured.")
-    
+    """

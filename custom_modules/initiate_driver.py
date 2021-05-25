@@ -6,6 +6,9 @@ from custom_modules import gecko_installer
 import platform
 import subprocess
 import re
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
 parent_dir = os.path.dirname(this_dir) #path to parent of current dir

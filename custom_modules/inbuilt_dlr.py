@@ -4,11 +4,14 @@ from bs4 import BeautifulSoup
 import os
 import time
 from clint.textui import progress
-from custom_modules.initiate_driver import driver
+from custom_modules.initiate_driver import driver, WebDriverWait, EC, By
 
 def downloader(download_link, location):
     driver.get(download_link)
-    time.sleep(5)
+    #time.sleep(5)
+    #wait for elements to load
+    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//form[@method = 'POST']/button[contains(@class, 'button')]")))
+
 
     download_page_source = driver.page_source
     download_page_soup = BeautifulSoup(download_page_source, 'html.parser')
