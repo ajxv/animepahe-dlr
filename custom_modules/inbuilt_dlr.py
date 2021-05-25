@@ -42,14 +42,15 @@ def downloader(download_link, location):
         'Upgrade-Insecure-Requests': '1'
     }
 
-    choice = "y"
+    choice = "0"
     if os.path.exists(file):
         print("[#] " + filename)
-        choice = input("File already exists. Re-download ? (y/n): ")
-        if choice.lower() not in ["y", "n"]:
-            print("Invalid Choice !")
+        while choice.lower() not in ["y", "n"]:
+            choice = input("File already exists. Re-download ? (y/n): ")
+            if choice.lower() not in ["y", "n"]:
+                print("Invalid Choice !")
     
-    if choice.lower() == "y":
+    if choice.lower() == "y" or choice.lower() == "0":
 
         response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
 
