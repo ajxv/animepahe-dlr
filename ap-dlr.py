@@ -1,22 +1,31 @@
 import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.common.exceptions import WebDriverException
 import time
 import sys
 import subprocess
 import re
 import os
 import platform
-from utils import gecko_installer
+from custom_modules import inbuilt_dlr
+from custom_modules.initiate_driver import driver, currentFFIDs, WebDriverWait, EC, By
 
-script_dir = os.path.dirname(os.path.abspath(__file__)) #path where script is stored
-current_system_os = platform.system() #get current os
+if len(sys.argv) > 1 and "-idm" in sys.argv:
+    download_with_idm = True
+else:
+    download_with_idm = False
+
+this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
+downloads_folder = os.path.expanduser("~") + os.path.sep + "Videos" + os.path.sep
+current_system_os = str(platform.system()) #get current os
+
+#enable this to download with idm if download with idm is selected
+if download_with_idm:
+    driver.install_addon(this_dir + os.path.sep + "driver_extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if prefered
+
 
 #add geckodriver path to PATH
-geckodriver_path = os.path.join(script_dir, "utils" + os.path.sep + "geckodriver")
-if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")):
+geckodriver_path = os.path.join(os.path.expanduser("~"), "geckodriver")
+if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")) or os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
     os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
 
 request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'}
@@ -25,31 +34,6 @@ base_url = "https://animepahe.com"
 index_url = "https://animepahe.com/anime"
 index_page = requests.get(index_url, headers=request_header)
 index_soup = BeautifulSoup(index_page.content, 'html.parser')
-
-if current_system_os == "Windows": # we need this only in windows
-    # get list of currently running firefox processes (for in case -- keyboardInterrupt occurs)
-    tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
-    currentFFIDs = re.findall(r"firefox.exe\s+(\d+)", tasklist)
-
-#firefox-webdriver options
-options = FirefoxOptions()
-options.add_argument("--headless")
-
-try:
-    #initiate driver
-    driver = webdriver.Firefox(options=options)
-
-except WebDriverException as driverException:
-    if "Message: 'geckodriver' executable needs to be in PATH." in str(driverException) :
-        gecko_installer.install(script_dir) #installs and adds geckodriver to PATH
-        driver = webdriver.Firefox(options=options)
-    else:
-        print(driverException)
-
-#Load add-ons to webdriver
-driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "universal-bypass.xpi", temporary=True)
-driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
-driver.install_addon(script_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
 
 
 def get_anime_list():
@@ -118,12 +102,15 @@ def get_download_link(episode_link, quality):
     else:
         graceful_exit("Error while getting download_link :(") #exit gracefully
 
-def download(download_link):
+def external_download(download_link):
 
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(download_link)
-    time.sleep(4) #wait for elements to load
-    print("[#] Downloading : " + driver.title.replace(" :: Kwik",''))
+    #time.sleep(4) 
+    #wait for elements to load
+    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//form[@method = 'POST']/button[contains(@class, 'button')]")))
+
+    print("[#] Download Captured : " + driver.title.replace(" :: Kwik",''))
     driver.find_element_by_xpath("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
 
     time.sleep(3) # wait for download to start
@@ -135,6 +122,19 @@ def tab_handler():
     time.sleep(3)
 
     driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
+
+def create_folder(in_location, title, current_os):
+    if str(current_os).lower() == "windows":
+        foldername = re.sub('[/\:*?<>|]', ' ', title)
+    elif str(current_os).lower() == "linux":
+        foldername = re.sub('[/]', ' ', title)
+
+    #make a new folder to download to (if one doesn't already exist)
+    new_folder = os.path.join(in_location, foldername)
+    if not os.path.exists(new_folder):
+        os.makedirs(new_folder)
+        
+    return new_folder
 
 def graceful_exit(msg):
     driver.quit()
@@ -158,14 +158,19 @@ def main():
     if not episode_links:
         graceful_exit("Couldln't find any episode links")
 
-    for ep_link in episode_links:
-        download_link = get_download_link(ep_link, qualtiy)
-        download(download_link)
+    if download_with_idm:
+        for ep_link in episode_links:
+            download_link = get_download_link(ep_link, qualtiy)
+            external_download(download_link)
+            
+        graceful_exit("\nAll Downloads Started !!") #exit gracefully
+    else:
+        anime_folder = create_folder(downloads_folder, anime_title, current_system_os)
+        for ep_link in episode_links:
+            download_link = get_download_link(ep_link, qualtiy)
+            inbuilt_dlr.download(download_link, anime_folder)
 
-
-    graceful_exit("\nAll Downloads Started !!") #exit gracefully
-    
-
+        graceful_exit("\nAll Downloads Completed !!") #exit gracefully
 
 if __name__ == "__main__":
 
@@ -189,7 +194,7 @@ if __name__ == "__main__":
 
         else:
             graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
-    """
-    except:
-        graceful_exit("Caught an Unexpected Error : Exiting Gracefully..") #exit gracefully
-        """
+    
+    except Exception as e:
+        graceful_exit("Oops! " + str(e.__class__) + " occured.")
+    

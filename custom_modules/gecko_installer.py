@@ -5,7 +5,7 @@ import os
 from zipfile import ZipFile
 import shutil
 
-current_os = platform.system()
+current_os = str(platform.system())
 
 def get_gecko_pkg_name():
     #navigate to latest geckodriver release page
@@ -17,7 +17,7 @@ def get_gecko_pkg_name():
     current_sys_arch = platform.architecture()[0] 
 
     #determine the system arch of file to download
-    if current_os == "Windows":
+    if current_os.lower() == "windows":
         if current_sys_arch == "64bit":
             pkg_arch = "win64"
         elif current_sys_arch == "32bit":
@@ -25,7 +25,7 @@ def get_gecko_pkg_name():
         
         gecko_pkg_name = "geckodriver-" + latest_version + "-" + pkg_arch + ".zip"
     
-    elif current_os == "Linux":
+    elif current_os.lower() == "linux":
         if current_sys_arch == "64bit":
             pkg_arch = "linux64"
         elif current_sys_arch == "32bit":
