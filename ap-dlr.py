@@ -194,7 +194,7 @@ if __name__ == "__main__":
 
         else:
             graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
-    """
+    
     except Exception as e:
         graceful_exit("Oops! " + str(e.__class__) + " occured.")
-    """
+    
