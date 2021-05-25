@@ -39,12 +39,14 @@ def downloader(download_link, location):
         'Upgrade-Insecure-Requests': '1'
     }
 
-    choice = "n"
+    choice = "y"
     if os.path.exists(file):
         print("[#] " + filename)
         choice = input("File already exists. Re-download ? (y/n): ")
+        if choice.lower() not in ["y", "n"]:
+            print("Invalid Choice !")
     
-    if choice.lower() == "n":
+    if choice.lower() == "y":
 
         response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
 
@@ -60,11 +62,17 @@ def downloader(download_link, location):
 
 
 def download(download_link, location):
+    error_counter = 0
     try:
+        if error_counter > 6:
+            print("Couldn't resolve the issue! Skipping file..")
+            return
         downloader(download_link, location)
     except TypeError:
+        error_counter += 1
         print("Failed to start download! Retrying..")
         download(download_link, location)
     except Exception as e:
+        error_counter += 1
         print(str(e.__class__) + " occured! Retrying..")
         download(download_link, location)

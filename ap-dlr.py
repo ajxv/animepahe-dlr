@@ -16,11 +16,11 @@ else:
 
 this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
 downloads_folder = os.path.expanduser("~") + os.path.sep + "Videos" + os.path.sep
-current_system_os = platform.system() #get current os
+current_system_os = str(platform.system()) #get current os
 
 #enable this to download with idm if download with idm is selected
 if download_with_idm:
-    driver.install_addon(this_dir + os.path.sep + "extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if available
+    driver.install_addon(this_dir + os.path.sep + "driver_extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if prefered
 
 
 #add geckodriver path to PATH
@@ -107,7 +107,7 @@ def external_download(download_link):
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(download_link)
     time.sleep(4) #wait for elements to load
-    print("[#] Downloading : " + driver.title.replace(" :: Kwik",''))
+    print("[#] Download Captured : " + driver.title.replace(" :: Kwik",''))
     driver.find_element_by_xpath("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
 
     time.sleep(3) # wait for download to start
@@ -120,7 +120,12 @@ def tab_handler():
 
     driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
 
-def create_folder(in_location, foldername):
+def create_folder(in_location, title, current_os):
+    if str(current_os).lower() == "windows":
+        foldername = re.sub('[/\:*?<>|]', ' ', title)
+    elif str(current_os).lower() == "linux":
+        foldername = re.sub('[/]', ' ', title)
+
     #make a new folder to download to (if one doesn't already exist)
     new_folder = os.path.join(in_location, foldername)
     if not os.path.exists(new_folder):
@@ -157,8 +162,7 @@ def main():
             
         graceful_exit("\nAll Downloads Started !!") #exit gracefully
     else:
-        title = re.sub('[/\:*?<>|]', '_', anime_title).replace('°', '`')
-        anime_folder = create_folder(downloads_folder, title)
+        anime_folder = create_folder(downloads_folder, anime_title, current_system_os)
         for ep_link in episode_links:
             download_link = get_download_link(ep_link, qualtiy)
             inbuilt_dlr.download(download_link, anime_folder)
