@@ -77,7 +77,7 @@ def download(download_link, location):
         print("Failed to start download! Retrying..")
         download(download_link, location)
     except KeyboardInterrupt:
-        print("KeyboardInterrupt Caught | Exiting downloader !")
+        print("KeyboardInterrupt Caught! | Exiting downloader..")
         return
     except Exception as e:
         error_counter += 1
