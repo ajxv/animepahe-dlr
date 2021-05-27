@@ -56,7 +56,7 @@ def downloader(download_link, location):
 
         with open(file, 'wb') as local_file:
             total_length = int(response.headers.get('content-length'))
-            for chunk in progress.bar(response.iter_content(chunk_size=2048),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
+            for chunk in progress.bar(response.iter_content(chunk_size=1024),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
                 if chunk:
                     local_file.write(chunk)
                     local_file.flush()
