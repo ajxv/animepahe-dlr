@@ -35,6 +35,16 @@ index_url = "https://animepahe.com/anime"
 index_page = requests.get(index_url, headers=request_header)
 index_soup = BeautifulSoup(index_page.content, 'html.parser')
 
+def banner():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('''
+                 _                            _                   _ _      
+      __ _ _ __ (_)_ __ ___   ___ _ __   __ _| |__   ___       __| | |_ __ 
+     / _` | '_ \| | '_ ` _ \ / _ \ '_ \ / _` | '_ \ / _ \____ / _` | | '__|
+    | (_| | | | | | | | | | |  __/ |_) | (_| | | | |  __/____| (_| | | |   
+     \__,_|_| |_|_|_| |_| |_|\___| .__/ \__,_|_| |_|\___|     \__,_|_|_|   
+                                 |_|                                        
+    ''')
 
 def get_anime_list():
     # get list of anime titles in webpage
@@ -59,6 +69,7 @@ def search_anime_title(anime_search_text):
 
     # get selection from user
     select = int(input("select[#] : "))
+    banner()
     print("selected : " + str(matching_titles[select]))
 
     return str(matching_titles[select])
@@ -142,6 +153,7 @@ def graceful_exit(msg):
 
 
 def main():
+    banner()
     anime_search_text = input("Search : ")
     anime_title = search_anime_title(anime_search_text)
 
