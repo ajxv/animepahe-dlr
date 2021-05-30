@@ -5,8 +5,10 @@ with open("Readme.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.12',
+    version = '0.1.13',
     description = "A python script to automate downloads from animepahe",
+    url = "https://github.com/ed-archer/animepahe-dlr",
+    author = "ed-archer",
     license = "MIT",
     py_modules = [
         'ap_dlr',
@@ -17,10 +19,10 @@ setup(
     package_dir = {'':'animepahe_dlr'},
     entry_points ={
             'console_scripts': [
-                'animepahe-dlr = ap_dlr:main'
+            'animepahe-dlr = ap_dlr:main'
             ]
     },
-    package_data={'animepahe-dlr': ['driver_extensions/*.xpi']},
+    package_data={'animepahe-dlr': ['driver_extensions/*']},
     include_package_data=True,
     
     install_requires = [
