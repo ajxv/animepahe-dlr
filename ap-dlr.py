@@ -98,7 +98,7 @@ def get_episode_links(anime_link):
 
 def choose_eps_to_dl(total_episodes):
     print(f"No. of episodes : {total_episodes}\n")
-    print("[0 : all(default) | x : episode x | x-y : episodes x to y ]\n")
+    print("Options: [0 : all | x : episode x | x-y : episodes x to y]\n")
     chosen = []
     
     choice = input("Episodes to download : ").replace(' ', '').split(',')
