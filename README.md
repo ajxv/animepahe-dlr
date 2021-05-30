@@ -1,3 +1,7 @@
+<!--- Badges --->
+[![PyPI version](https://badge.fury.io/py/animepahe-dlr.svg)](https://pypi.org/project/animepahe-dlr/)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/ed-archer/animepahe-dlr/issues)
+<!--- Badges --->
 # animepahe-dlr
 A python script to automate downloads from animepahe.
 
