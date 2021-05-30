@@ -1,2 +1,2 @@
 include *.txt
-recursive-include animepahe_dlr *.xpi
+include animepahe_dlr *.xpi

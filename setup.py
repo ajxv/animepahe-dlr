@@ -5,7 +5,7 @@ with open("Readme.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.11',
+    version = '0.1.12',
     description = "A python script to automate downloads from animepahe",
     license = "MIT",
     py_modules = [
@@ -19,10 +19,6 @@ setup(
             'console_scripts': [
                 'animepahe-dlr = ap_dlr:main'
             ]
-    },
-    
-    package_data={
-    'animepahe_dlr': ['driver_extensions/*.xpi'],
     },
     include_package_data=True,
     
