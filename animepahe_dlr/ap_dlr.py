@@ -181,74 +181,75 @@ def graceful_exit(msg):
     driver.quit()
     sys.exit(msg)
 
+def winKeyInterruptHandler():
+    #find new firefox processes
+        tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
+        newFFIDs = set(re.findall(r"firefox.exe\s+(\d+)", tasklist)).difference(currentFFIDs)
+
+        #kills spawned firefox drivers -- (may also crash some tabs in other firefox sessions)
+        taskkill = 'taskkill /f '+''.join(["/pid "+f+" " for f in newFFIDs]).strip()
+        subprocess.check_output(taskkill.split(), shell=True)
+
+        print("\nKeyboardInterrupt : Exiting with dirty hands..")
+        print("You may experience a tab-crash in your open firefox sessions")
 
 def main():
-    anime_search_text = input("Search : ")
-    anime_title = search_anime_title(anime_search_text)
-
-    qualtiy = ["720p", "576p", "480p"]
-
-    # get link tail for selected anime
-    for atag in index_soup.find_all('a', title = anime_title):
-        tail = atag['href']
-
-    anime_link = base_url + tail #link of anime-page
-
-    episode_links = get_episode_links(anime_link)
-
-    if not episode_links:
-        graceful_exit("Couldln't find any episode links")
-    
-    episode_choice = choose_eps_to_dl(len(episode_links))
-    
-    if download_with_idm:
-        print('''
-    ----------------------------------------
-            Starting Downloads..
-    ----------------------------------------
-    ''')
-        for ep in episode_choice:
-            download_link = get_download_link(episode_links[ep - 1], qualtiy)
-            external_download(download_link)
-            
-        graceful_exit("\nAll Downloads Started !!") #exit gracefully
-    else:
-        print('''
-    ----------------------------------------
-                Downloading..
-    ----------------------------------------
-    ''')
-        anime_folder = create_folder(downloads_folder, anime_title, current_system_os)
-        for ep in episode_choice:
-            download_link = get_download_link(episode_links[ep - 1], qualtiy)
-            inbuilt_dlr.download(download_link, anime_folder)
-
-        graceful_exit("\nAll Downloads Completed !!") #exit gracefully
-
-if __name__ == "__main__":
-
-    banner() #displays banner
-    tab_handler() #handles open tabs in webdriver
-
     try:
-        main()
+        banner() #displays banner
+        tab_handler() #handles open tabs in webdriver
+
+        anime_search_text = input("Search : ")
+        anime_title = search_anime_title(anime_search_text)
+
+        qualtiy = ["720p", "576p", "480p"]
+
+        # get link tail for selected anime
+        for atag in index_soup.find_all('a', title = anime_title):
+            tail = atag['href']
+
+        anime_link = base_url + tail #link of anime-page
+
+        episode_links = get_episode_links(anime_link)
+
+        if not episode_links:
+            graceful_exit("Couldln't find any episode links")
+        
+        episode_choice = choose_eps_to_dl(len(episode_links))
+        
+        if download_with_idm:
+            print('''
+        ----------------------------------------
+                Starting Downloads..
+        ----------------------------------------
+        ''')
+            for ep in episode_choice:
+                download_link = get_download_link(episode_links[ep - 1], qualtiy)
+                external_download(download_link)
+                
+            graceful_exit("\nAll Downloads Started !!") #exit gracefully
+        else:
+            print('''
+        ----------------------------------------
+                    Downloading..
+        ----------------------------------------
+        ''')
+            anime_folder = create_folder(downloads_folder, anime_title, current_system_os)
+            for ep in episode_choice:
+                download_link = get_download_link(episode_links[ep - 1], qualtiy)
+                inbuilt_dlr.download(download_link, anime_folder)
+
+            graceful_exit("\nAll Downloads Completed !!") #exit gracefully
+
     except KeyboardInterrupt:
-
         if current_system_os == "Windows": #needed only if in windows
-            #find new firefox processes
-            tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
-            newFFIDs = set(re.findall(r"firefox.exe\s+(\d+)", tasklist)).difference(currentFFIDs)
-
-            #kills spawned firefox drivers -- (may also crash some tabs in other firefox sessions)
-            taskkill = 'taskkill /f '+''.join(["/pid "+f+" " for f in newFFIDs]).strip()
-            subprocess.check_output(taskkill.split(), shell=True)
-
-            print("\nKeyboardInterrupt : Exiting with dirty hands..")
-            print("You may experience a tab-crash in your open firefox sessions")
-
+            winKeyInterruptHandler()
         else:
             graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
-    
     except Exception as e:
         graceful_exit("Oops! " + str(e.__class__) + " occured.")
+
+
+if __name__ == "__main__":
+    main()
+
     
