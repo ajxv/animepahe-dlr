@@ -5,7 +5,7 @@ with open("Readme.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.5',
+    version = '0.1.1',
     description = "A python script to automate downloads from animepahe",
     license = "MIT",
     py_modules = [
@@ -20,6 +20,8 @@ setup(
                 'animepahe-dlr = ap_dlr:main'
             ]
     },
+    include_package_data=True,
+    
     install_requires = [
         'beautifulsoup4 >= 4.9.3',
         'selenium >= 3.141.0',
