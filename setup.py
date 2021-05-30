@@ -5,7 +5,7 @@ with open("Readme.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.14',
+    version = '0.1.15',
     description = "A python script to automate downloads from animepahe",
     url = "https://github.com/ed-archer/animepahe-dlr",
     author = "ed-archer",
