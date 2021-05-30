@@ -24,7 +24,8 @@ A python script to automate downloads from animepahe.
 
 ## Features
 - Search for an anime.
-- Select the anime from search results to download all the episodes available under the selected anime.
+- Select anime from search result.
+- Select episodes to download.
 - Downloads are made using inbuilt-dlr.
 - **Downloading and Quality :**
   - Downloads are taken care of by the inbuilt downloader on default.
