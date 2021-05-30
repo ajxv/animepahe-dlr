@@ -5,7 +5,7 @@ with open("Readme.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.13',
+    version = '0.1.14',
     description = "A python script to automate downloads from animepahe",
     url = "https://github.com/ed-archer/animepahe-dlr",
     author = "ed-archer",
@@ -22,8 +22,10 @@ setup(
             'animepahe-dlr = ap_dlr:main'
             ]
     },
-    package_data={'animepahe-dlr': ['driver_extensions/*']},
+
     include_package_data=True,
+    package_data={"animepahe_dlr.driver_extensions": ["*.xpi"]},
+    packages = ["animepahe_dlr", "animepahe_dlr.driver_extensions", "animepahe_dlr.custom_modules"],
     
     install_requires = [
         'beautifulsoup4 >= 4.9.3',
