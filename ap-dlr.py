@@ -35,6 +35,16 @@ index_url = "https://animepahe.com/anime"
 index_page = requests.get(index_url, headers=request_header)
 index_soup = BeautifulSoup(index_page.content, 'html.parser')
 
+def banner():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('''
+                 _                            _                   _ _      
+      __ _ _ __ (_)_ __ ___   ___ _ __   __ _| |__   ___       __| | |_ __ 
+     / _` | '_ \| | '_ ` _ \ / _ \ '_ \ / _` | '_ \ / _ \____ / _` | | '__|
+    | (_| | | | | | | | | | |  __/ |_) | (_| | | | |  __/____| (_| | | |   
+     \__,_|_| |_|_|_| |_| |_|\___| .__/ \__,_|_| |_|\___|     \__,_|_|_|   
+                                 |_|                                        
+    ''')
 
 def get_anime_list():
     # get list of anime titles in webpage
@@ -72,13 +82,44 @@ def get_episode_links(anime_link):
 
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(anime_link)
+    links = []
+    while 1:
+        time.sleep(3)
+        anime_page = driver.page_source
+        anime_page_soup = BeautifulSoup(anime_page, 'html.parser')
+        
+        links += [base_url + a['href'] for a in anime_page_soup.find_all('a', {"class" : "play"})]
 
-    time.sleep(2)
+        try:
+            driver.find_element_by_xpath("//li[@class = 'page-item']/a[contains(@class, 'next-page')]").click()
+        except: 
+            break
+    return links
 
-    anime_page = driver.page_source
-    anime_page_soup = BeautifulSoup(anime_page, 'html.parser')
+def choose_eps_to_dl(total_episodes):
+    print(f"No. of episodes : {total_episodes}\n")
+    print("[0 : all(default) | x : episode x | x-y : episodes x to y ]\n")
+    chosen = []
+    
+    choice = input("Episodes to download : ").replace(' ', '').split(',')
+    if choice == "":
+        chosen.append(0)
+        return chosen
 
-    return [base_url + a['href'] for a in anime_page_soup.find_all('a', {"class" : "play"})]
+    for i in range(len(choice)):
+        if choice[i] == '0':
+            chosen.clear
+            for j in range(1, total_episodes + 1):
+                chosen.append(j)
+            break
+        if "-" in choice[i]:
+            r = choice[i].split('-')
+            for j in range(int(r[0]), int(r[1]) + 1):
+                chosen.append(j)
+            continue
+        chosen.append(int(choice[i]))
+
+    return chosen
 
 def get_download_link(episode_link, quality):
 
@@ -157,23 +198,36 @@ def main():
 
     if not episode_links:
         graceful_exit("Couldln't find any episode links")
-
+    
+    episode_choice = choose_eps_to_dl(len(episode_links))
+    
     if download_with_idm:
-        for ep_link in episode_links:
-            download_link = get_download_link(ep_link, qualtiy)
+        print('''
+    ----------------------------------------
+            Starting Downloads..
+    ----------------------------------------
+    ''')
+        for ep in episode_choice:
+            download_link = get_download_link(episode_links[ep - 1], qualtiy)
             external_download(download_link)
             
         graceful_exit("\nAll Downloads Started !!") #exit gracefully
     else:
+        print('''
+    ----------------------------------------
+                Downloading..
+    ----------------------------------------
+    ''')
         anime_folder = create_folder(downloads_folder, anime_title, current_system_os)
-        for ep_link in episode_links:
-            download_link = get_download_link(ep_link, qualtiy)
+        for ep in episode_choice:
+            download_link = get_download_link(episode_links[ep - 1], qualtiy)
             inbuilt_dlr.download(download_link, anime_folder)
 
         graceful_exit("\nAll Downloads Completed !!") #exit gracefully
 
 if __name__ == "__main__":
 
+    banner() #displays banner
     tab_handler() #handles open tabs in webdriver
 
     try:
