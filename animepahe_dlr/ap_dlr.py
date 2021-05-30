@@ -7,8 +7,10 @@ import re
 import os
 import platform
 from custom_modules import inbuilt_dlr
-from custom_modules.initiate_driver import driver, currentFFIDs, WebDriverWait, EC, By
-
+from custom_modules.initiate_driver import driver, WebDriverWait, EC, By
+if os.name == 'nt':
+    from custom_modules.initiate_driver import currentFFIDs
+    
 if len(sys.argv) > 1 and "-idm" in sys.argv:
     download_with_idm = True
 else:
