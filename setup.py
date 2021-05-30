@@ -5,8 +5,8 @@ with open("Readme.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.0.1',
-    description = "automates downloads from animepahe using selenium.",
+    version = '0.1.5',
+    description = "A python script to automate downloads from animepahe",
     license = "MIT",
     py_modules = [
         'ap_dlr',
@@ -31,6 +31,8 @@ setup(
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Operating System :: Windows",
+        "Operating System :: Linux",
     ],
 
     long_description = long_description,
