@@ -5,7 +5,7 @@ with open("Readme.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.1',
+    version = '0.1.11',
     description = "A python script to automate downloads from animepahe",
     license = "MIT",
     py_modules = [
