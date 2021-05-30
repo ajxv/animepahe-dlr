@@ -19,7 +19,7 @@ A python script to automate downloads from animepahe.
 ## Getting Started
 1. Make sure you have Python and Firefox installed in your system
 2. Install PyPI package using `pip install animepahe-dlr`
-3. Wait for pip to install animepahe-dlr all required dependencies. Enjoy the script :blush:
+3. Wait for pip to install animepahe-dlr and all required dependencies. Enjoy the script :blush:
 ## Usage
 - Syntax: `animepahe-dlr -<optional arguments>`
 - To run the script, execute `animepahe-dlr`
