@@ -1,0 +1,3 @@
+include *.txt
+include animepahe_dlr/driver_extensions
+recursive-include animepahe_dlr *.xpi
