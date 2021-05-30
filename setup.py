@@ -20,6 +20,10 @@ setup(
                 'animepahe-dlr = ap_dlr:main'
             ]
     },
+    
+    package_data={
+    'animepahe_dlr': ['driver_extensions/*.xpi'],
+    },
     include_package_data=True,
     
     install_requires = [
