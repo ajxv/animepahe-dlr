@@ -19,7 +19,7 @@ A python script to automate downloads from animepahe.
 4. Use `python3 ap-dlr.py` to execute the script.
 
 ## Usage
-- To execute the script, use `pyhton3 ap-dlr.py`
+- To execute the script, use `python3 ap-dlr.py`
 - To use idm to capture downloads, execute script using '-idm' argument : `python3 ap-dlr.py -idm`
 
 ## Features
