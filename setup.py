@@ -25,7 +25,7 @@ setup(
 
     include_package_data=True,
     package_data={"animepahe_dlr.driver_extensions": ["*.xpi"]},
-    packages = ["animepahe_dlr", "animepahe_dlr.driver_extensions", "animepahe_dlr.custom_modules"],
+    packages = ["driver_extensions", "custom_modules"],
     
     install_requires = [
         'beautifulsoup4 >= 4.9.3',
