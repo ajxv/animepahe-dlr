@@ -33,8 +33,8 @@ setup(
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Operating System :: Windows",
-        "Operating System :: Linux",
+        "Operating System :: Microsoft :: Windows :: Windows 10",
+        "Operating System :: POSIX :: Linux",
     ],
 
     long_description = long_description,
