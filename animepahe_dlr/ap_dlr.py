@@ -26,7 +26,7 @@ if download_with_idm:
 
 
 #add geckodriver path to PATH
-geckodriver_path = os.path.join(os.path.expanduser("~"), "geckodriver")
+geckodriver_path = os.path.join(os.path.join(this_dir, "custom_modules"), "geckodriver")
 if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")) or os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
     os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
 
