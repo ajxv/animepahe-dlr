@@ -41,7 +41,7 @@ def downloader(download_link, location):
     }
 
     if os.path.exists(file):
-        print("File exists.. resuming download..")
+        print("File already exists! Resuming download..")
         current_size = os.stat(file).st_size
         header.update( {'Range':'bytes=%d-' %current_size} )
     
