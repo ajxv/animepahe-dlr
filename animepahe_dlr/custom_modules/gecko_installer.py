@@ -23,7 +23,7 @@ def get_gecko_pkg_name():
         elif current_sys_arch == "32bit":
             pkg_arch = "win32"
         
-        gecko_pkg_name = "geckodriver-" + latest_version + "-" + pkg_arch + ".zip"
+        extension = "zip"
     
     elif current_os.lower() == "linux":
         if current_sys_arch == "64bit":
@@ -31,7 +31,9 @@ def get_gecko_pkg_name():
         elif current_sys_arch == "32bit":
             pkg_arch = "linux32"
         
-        gecko_pkg_name = "geckodriver-" + latest_version + "-" + pkg_arch + ".tar.gz"
+        extension = "tar.gz"
+
+    gecko_pkg_name = f"geckodriver-{latest_version}-{pkg_arch}.{extension}"
 
     return gecko_pkg_name
 
@@ -85,7 +87,7 @@ def add_to_PATH(path_of_dir):
 
 def install(to_location):
     package_name = get_gecko_pkg_name()
-    gecko_dl_link = "https://github.com/mozilla/geckodriver/releases/download/v0.29.1/" + package_name
+    gecko_dl_link = f"https://github.com/mozilla/geckodriver/releases/download/v0.29.1/{package_name}"
 
     geckodriver_dir = create_folder(to_location)
 
@@ -97,3 +99,6 @@ def install(to_location):
         gecko_file = extract_tar_gz(gecko_pkg, geckodriver_dir) #extracts downloaded tar.gz file
 
     add_to_PATH(geckodriver_dir) #add geckodriver to path
+
+
+install(os.path.dirname(os.path.abspath(__file__)))
