@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import os
+import time
 from clint.textui import progress
 from custom_modules.initiate_driver import driver, WebDriverWait, EC, By
 
@@ -39,30 +40,23 @@ def downloader(download_link, location):
         'Upgrade-Insecure-Requests': '1'
     }
 
-    choice = "0"
     if os.path.exists(file):
         print("File exists.. resuming download..")
         current_size = os.stat(file).st_size
         header.update( {'Range':'bytes=%d-' %current_size} )
-        response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
-        total_length = int(response.headers.get('content-length'))
-
-        with open(file, 'ab') as local_file:
-            for chunk in progress.bar(response.iter_content(chunk_size=1024),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
-                if chunk:
-                    local_file.write(chunk)
-                    local_file.flush()
     
-    else:
-        response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
-        total_length = int(response.headers.get('content-length'))
+    response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
+    total_length = int(response.headers.get('content-length'))
 
-        with open(file, 'wb') as local_file:
-            for chunk in progress.bar(response.iter_content(chunk_size=1024),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
-                if chunk:
-                    local_file.write(chunk)
-                    local_file.flush()
+    with open(file, 'ab') as local_file:
+        for chunk in progress.bar(response.iter_content(chunk_size=1024),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
+            if chunk:
+                local_file.write(chunk)
+                local_file.flush()
 
+    if str(total_length) == "190":
+        time.sleep(5)
+        return
 
 
 def download(download_link, location):
