@@ -6,7 +6,6 @@ from custom_modules.initiate_driver import driver, WebDriverWait, EC, By
 
 def downloader(download_link, location):
     driver.get(download_link)
-    #time.sleep(5)
     #wait for elements to load
     WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//form[@method = 'POST']/button[contains(@class, 'button')]")))
 
@@ -42,39 +41,33 @@ def downloader(download_link, location):
 
     choice = "0"
     if os.path.exists(file):
-        print("[#] " + filename)
-        while choice.lower() not in ["y", "n"]:
-            choice = input("File already exists. Re-download ? (y/n): ")
-            if choice.lower() not in ["y", "n"]:
-                print("Invalid Choice !")
-    
-    if choice.lower() == "y" or choice.lower() == "0":
-
+        print("File exists.. resuming download..")
+        current_size = os.stat(file).st_size
+        header.update( {'Range':'bytes=%d-' %current_size} )
         response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
+        total_length = int(response.headers.get('content-length'))
 
-        with open(file, 'wb') as local_file:
-            total_length = int(response.headers.get('content-length'))
+        with open(file, 'ab') as local_file:
             for chunk in progress.bar(response.iter_content(chunk_size=1024),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
                 if chunk:
                     local_file.write(chunk)
                     local_file.flush()
+    
     else:
-        print("Skipping file..")
+        response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
+        total_length = int(response.headers.get('content-length'))
+
+        with open(file, 'wb') as local_file:
+            for chunk in progress.bar(response.iter_content(chunk_size=1024),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
+                if chunk:
+                    local_file.write(chunk)
+                    local_file.flush()
 
 
 
 def download(download_link, location):
-    error_counter = 0
     try:
-        if error_counter > 6:
-            print("Couldn't resolve the issue! Skipping file..")
-            return
         downloader(download_link, location)
-    except TypeError:
-        error_counter += 1
-        print("Failed to start download! Retrying..")
-        download(download_link, location)
     except Exception as e:
-        error_counter += 1
         print(str(e.__class__) + " occured! Retrying..")
         download(download_link, location)
