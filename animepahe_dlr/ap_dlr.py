@@ -66,8 +66,8 @@ def search_anime_title(anime_search_text):
 
     # store a list of matching titles
     matching_titles = [s for s in anime_list if anime_search_text.lower() in s.lower()]
-    for title in matching_titles:
-        print("[" + str(matching_titles.index(title)) + "] " + str(title))
+    for i, title in enumerate(matching_titles):
+        print(f"[{i}] {title}")
 
     # get selection from user
     select = int(input("select[#] : "))
