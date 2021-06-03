@@ -80,8 +80,7 @@ def extract_tar_gz(gecko_tar_gz, geckodriver_dir):
     return gecko_file
 
 def add_to_PATH(path_of_dir):
-    if path_of_dir not in os.environ['PATH']:
-        #print("Adding " + path_of_dir + " to $PATH")
+    if path_of_dir not in os.environ['PATH']: #add the dir containing geckodriver to PATH
         os.environ['PATH'] = os.environ['PATH'] + os.pathsep + path_of_dir
 
 def install(to_location):
@@ -92,9 +91,9 @@ def install(to_location):
 
     gecko_pkg = download_package(geckodriver_dir, gecko_dl_link, package_name) #download zip file to download_path
 
-    if platform.system() == "Windows":
+    if current_os.lower() == "windows":
         gecko_file = extract_zip(gecko_pkg, geckodriver_dir) #extracts downloaded zip
-    elif platform.system() == "Linux":
+    elif current_os.lower() == "linux":
         gecko_file = extract_tar_gz(gecko_pkg, geckodriver_dir) #extracts downloaded tar.gz file
 
     add_to_PATH(geckodriver_dir) #add geckodriver to path
