@@ -71,7 +71,7 @@ def search_anime_title(anime_search_text):
 
     # get selection from user
     select = int(input("select[#] : "))
-    print("selected : " + str(matching_titles[select]))
+    print(f"selected : {str(matching_titles[select])}")
 
     return str(matching_titles[select])
 
@@ -167,9 +167,9 @@ def tab_handler():
     driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
 
 def create_folder(in_location, title, current_os):
-    if str(current_os).lower() == "windows":
+    if current_os.lower() == "windows":
         foldername = re.sub('[/\:*?<>|]', ' ', title)
-    elif str(current_os).lower() == "linux":
+    elif current_os.lower() == "linux":
         foldername = re.sub('[/]', ' ', title)
 
     #make a new folder to download to (if one doesn't already exist)
@@ -243,12 +243,12 @@ def main():
             graceful_exit("\nAll Downloads Completed !!") #exit gracefully
 
     except KeyboardInterrupt:
-        if current_system_os == "Windows": #needed only if in windows
+        if current_system_os.lower() == "windows": #needed only if in windows
             winKeyInterruptHandler()
         else:
             graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
     except Exception as e:
-        graceful_exit("Oops! " + str(e.__class__) + " occured.")
+        graceful_exit(f"Oops! {str(e.__class__)} occured.")
 
 
 if __name__ == "__main__":
