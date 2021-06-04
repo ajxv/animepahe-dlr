@@ -16,8 +16,12 @@ current_system_os = str(platform.system()) #get current os
 
 #add geckodriver path to PATH
 geckodriver_path = os.path.join(os.path.join(this_dir, "ap_dlr_modules"), "geckodriver")
-if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")) or os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
-    os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
+if current_system_os.lower() == "windows":
+    if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")):
+        os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
+if current_system_os.lower() == "linux":
+    if os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
+        os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
     
 #firefox-webdriver options
 options = FirefoxOptions()
