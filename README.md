@@ -1,8 +1,12 @@
-<!--- Badges --->
+<!-- Badges -->
 [![PyPI version](https://badge.fury.io/py/animepahe-dlr.svg)](https://pypi.org/project/animepahe-dlr/)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/ed-archer/animepahe-dlr/)
 [![License](https://img.shields.io/github/license/ed-archer/animepahe-dlr?color=brightgreen)](https://github.com/ed-archer/animepahe-dlr/blob/main/license.md)
-<!--- Badges --->
+[![OpenIssues](https://img.shields.io/github/issues/ed-archer/animepahe-dlr?color=important)](https://github.com/ed-archer/animepahe-dlr/issues)
+<!--LineBreak-->
+[![Windows](https://img.shields.io/badge/Windows-white?style=flat-square&logo=windows&logoColor=blue)](https://github.com/ed-archer/animepahe-dlr/)
+[![Ubuntu](https://img.shields.io/badge/Ubuntu-white?style=flat-square&logo=ubuntu&logoColor=E95420)](https://github.com/ed-archer/animepahe-dlr/)
+<!-- Badges -->
 # animepahe-dlr
 A python script to automate downloads from animepahe.
 
