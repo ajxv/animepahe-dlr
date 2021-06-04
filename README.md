@@ -25,16 +25,29 @@ A python script to automate downloads from animepahe.
 - To run the script, execute `animepahe-dlr`
 - To use idm to capture downloads, execute script using '-idm' argument : `animepahe-dlr -idm`
 
+![animepahe-dlr](https://user-images.githubusercontent.com/56473062/120795797-922a3b80-c557-11eb-8328-26cfb39f4187.png)
+
 ## Features
 - Search for an anime.
 - Select anime from search result.
 - Select episodes to download.
 - Downloads are made using inbuilt-dlr (default).
+- Inbuilt-dlr finds and resumes incomplete downloads by default.
+- **Episode Selection Options:**
+  - `0` : downloads all the episodes of the selected anime.
+  - x : downloads episode x.
+    - eg:- `1` : downloads episode1, `5` downloads episode5 and so on.
+  - x-y : downloads episodes from x to y. 
+    - eg:- `3-9` : downloads episodes 3 to 9 (3 and 9 inclusive)
+  - In case of multiple options, each options must be seperated by a `,`
+  - Example: `1, 3, 6-11` : downloads episodes 1,3,6,7,8,9,10,11
+  
 - **Downloading and Quality :**
+  - Files are downloaded to your Videos directory.
   - Downloads are taken care of by the inbuilt downloader on default.
   - Currently the download quality priority is as follows : [720p, 576p, 480p]
     - ie, downloader first checks for 720p video, if 720p is not available checks for 576p and so on.
-    - If you want to download anime in 1080p, open up 'ap-dlr.py' in any editor and add 1080p to the begining of the list defined using 'quality' variable in the code. 
+    - If you are building from source and want to download anime in 1080p, open up 'ap-dlr.py' in any editor and add 1080p to the begining of the list defined using 'quality' variable in the code. 
 
 ## Notes
 - Make sure you have python, Firefox (and IDM, if you want idm to capture downlads) installed before downloading the script.

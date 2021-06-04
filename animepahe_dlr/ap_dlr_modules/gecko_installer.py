@@ -23,7 +23,7 @@ def get_gecko_pkg_name():
         elif current_sys_arch == "32bit":
             pkg_arch = "win32"
         
-        gecko_pkg_name = "geckodriver-" + latest_version + "-" + pkg_arch + ".zip"
+        extension = "zip"
     
     elif current_os.lower() == "linux":
         if current_sys_arch == "64bit":
@@ -31,7 +31,9 @@ def get_gecko_pkg_name():
         elif current_sys_arch == "32bit":
             pkg_arch = "linux32"
         
-        gecko_pkg_name = "geckodriver-" + latest_version + "-" + pkg_arch + ".tar.gz"
+        extension = "tar.gz"
+
+    gecko_pkg_name = f"geckodriver-{latest_version}-{pkg_arch}.{extension}"
 
     return gecko_pkg_name
 
@@ -80,21 +82,23 @@ def extract_tar_gz(gecko_tar_gz, geckodriver_dir):
     return gecko_file
 
 def add_to_PATH(path_of_dir):
-    if path_of_dir not in os.environ['PATH']:
-        #print("Adding " + path_of_dir + " to $PATH")
+    if path_of_dir not in os.environ['PATH']: #add the dir containing geckodriver to PATH
         os.environ['PATH'] = os.environ['PATH'] + os.pathsep + path_of_dir
 
 def install(to_location):
     package_name = get_gecko_pkg_name()
-    gecko_dl_link = "https://github.com/mozilla/geckodriver/releases/download/v0.29.1/" + package_name
+    gecko_dl_link = f"https://github.com/mozilla/geckodriver/releases/download/v0.29.1/{package_name}"
 
     geckodriver_dir = create_folder(to_location)
 
     gecko_pkg = download_package(geckodriver_dir, gecko_dl_link, package_name) #download zip file to download_path
 
-    if platform.system() == "Windows":
+    if current_os.lower() == "windows":
         gecko_file = extract_zip(gecko_pkg, geckodriver_dir) #extracts downloaded zip
-    elif platform.system() == "Linux":
+    elif current_os.lower() == "linux":
         gecko_file = extract_tar_gz(gecko_pkg, geckodriver_dir) #extracts downloaded tar.gz file
 
     add_to_PATH(geckodriver_dir) #add geckodriver to path
+
+
+install(os.path.dirname(os.path.abspath(__file__)))

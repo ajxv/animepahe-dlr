@@ -6,10 +6,10 @@ import subprocess
 import re
 import os
 import platform
-from custom_modules import inbuilt_dlr
-from custom_modules.initiate_driver import driver, WebDriverWait, EC, By
+from ap_dlr_modules import inbuilt_dlr
+from ap_dlr_modules.initiate_driver import driver, WebDriverWait, EC, By
 if os.name == 'nt':
-    from custom_modules.initiate_driver import currentFFIDs
+    from ap_dlr_modules.initiate_driver import currentFFIDs
     
 if len(sys.argv) > 1 and "-idm" in sys.argv:
     download_with_idm = True
@@ -24,11 +24,6 @@ current_system_os = str(platform.system()) #get current os
 if download_with_idm:
     driver.install_addon(this_dir + os.path.sep + "driver_extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if prefered
 
-
-#add geckodriver path to PATH
-geckodriver_path = os.path.join(os.path.expanduser("~"), "geckodriver")
-if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")) or os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
-    os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
 
 request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'}
 base_url = "https://animepahe.com"
@@ -66,12 +61,12 @@ def search_anime_title(anime_search_text):
 
     # store a list of matching titles
     matching_titles = [s for s in anime_list if anime_search_text.lower() in s.lower()]
-    for title in matching_titles:
-        print("[" + str(matching_titles.index(title)) + "] " + str(title))
+    for i, title in enumerate(matching_titles):
+        print(f"[{i}] {title}")
 
     # get selection from user
     select = int(input("select[#] : "))
-    print("selected : " + str(matching_titles[select]))
+    print(f"selected : {str(matching_titles[select])}")
 
     return str(matching_titles[select])
 
@@ -167,9 +162,9 @@ def tab_handler():
     driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
 
 def create_folder(in_location, title, current_os):
-    if str(current_os).lower() == "windows":
+    if current_os.lower() == "windows":
         foldername = re.sub('[/\:*?<>|]', ' ', title)
-    elif str(current_os).lower() == "linux":
+    elif current_os.lower() == "linux":
         foldername = re.sub('[/]', ' ', title)
 
     #make a new folder to download to (if one doesn't already exist)
@@ -243,12 +238,12 @@ def main():
             graceful_exit("\nAll Downloads Completed !!") #exit gracefully
 
     except KeyboardInterrupt:
-        if current_system_os == "Windows": #needed only if in windows
+        if current_system_os.lower() == "windows": #needed only if in windows
             winKeyInterruptHandler()
         else:
             graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") #exit gracefully
     except Exception as e:
-        graceful_exit("Oops! " + str(e.__class__) + " occured.")
+        graceful_exit(f"Oops! {str(e.__class__)} occured.")
 
 
 if __name__ == "__main__":
