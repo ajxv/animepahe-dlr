@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import os
 import time
 from clint.textui import progress
-from custom_modules.initiate_driver import driver, WebDriverWait, EC, By
+from ap_dlr_modules.initiate_driver import driver, WebDriverWait, EC, By
 
 def downloader(download_link, location):
     driver.get(download_link)

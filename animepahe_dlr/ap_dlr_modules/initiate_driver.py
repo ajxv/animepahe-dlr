@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.common.exceptions import WebDriverException
 import os
-from custom_modules import gecko_installer
+from ap_dlr_modules import gecko_installer
 import platform
 import subprocess
 import re

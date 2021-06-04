@@ -12,20 +12,18 @@ setup(
     license = "MIT",
     py_modules = [
         'ap_dlr',
-        'custom_modules.gecko_installer', 
-        'custom_modules.inbuilt_dlr', 
-        'custom_modules.initiate_driver',
+        'ap_dlr_modules.gecko_installer', 
+        'ap_dlr_modules.inbuilt_dlr', 
+        'ap_dlr_modules.initiate_driver',
     ],
     package_dir = {'':'animepahe_dlr'},
     entry_points ={
-            'console_scripts': [
-            'animepahe-dlr = ap_dlr:main'
-            ]
+            'console_scripts': ['animepahe-dlr = ap_dlr:main']
     },
 
     include_package_data=True,
     package_data={"animepahe_dlr.driver_extensions": ["*.xpi"]},
-    packages = ["driver_extensions", "custom_modules"],
+    packages = ["driver_extensions", "ap_dlr_modules"],
     
     install_requires = [
         'beautifulsoup4 >= 4.9.3',

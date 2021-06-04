@@ -6,10 +6,10 @@ import subprocess
 import re
 import os
 import platform
-from custom_modules import inbuilt_dlr
-from custom_modules.initiate_driver import driver, WebDriverWait, EC, By
+from ap_dlr_modules import inbuilt_dlr
+from ap_dlr_modules.initiate_driver import driver, WebDriverWait, EC, By
 if os.name == 'nt':
-    from custom_modules.initiate_driver import currentFFIDs
+    from ap_dlr_modules.initiate_driver import currentFFIDs
     
 if len(sys.argv) > 1 and "-idm" in sys.argv:
     download_with_idm = True
@@ -26,7 +26,7 @@ if download_with_idm:
 
 
 #add geckodriver path to PATH
-geckodriver_path = os.path.join(os.path.join(this_dir, "custom_modules"), "geckodriver")
+geckodriver_path = os.path.join(os.path.join(this_dir, "ap_dlr_modules"), "geckodriver")
 if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")) or os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
     os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
 
