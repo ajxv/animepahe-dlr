@@ -25,11 +25,14 @@ A python script to automate downloads from animepahe.
 - To run the script, execute `animepahe-dlr`
 - To use idm to capture downloads, execute script using '-idm' argument : `animepahe-dlr -idm`
 
+![animepahe-dlr](https://user-images.githubusercontent.com/56473062/120795797-922a3b80-c557-11eb-8328-26cfb39f4187.png)
+
 ## Features
 - Search for an anime.
 - Select anime from search result.
 - Select episodes to download.
 - Downloads are made using inbuilt-dlr (default).
+- Inbuilt-dlr finds and resumes incomplete downloads by default.
 - **Episode Selection Options:**
   - `0` : downloads all the episodes of the selected anime.
   - x : downloads episode x.
