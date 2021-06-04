@@ -22,7 +22,8 @@ if current_system_os.lower() == "windows":
 if current_system_os.lower() == "linux":
     if os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
         os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
-    
+
+log_file = os.path.join(geckodriver_path, 'geckodriver.log')
 #firefox-webdriver options
 options = FirefoxOptions()
 options.add_argument("--headless")
@@ -34,7 +35,7 @@ if current_system_os.lower() == "windows": # we need this only in windows
 
 try:
     #initiate driver
-    driver = webdriver.Firefox(options=options, service_log_path=geckodriver_path)
+    driver = webdriver.Firefox(options=options, service_log_path=log_file)
 
 except WebDriverException as driverException:
     if "Message: 'geckodriver' executable needs to be in PATH." in str(driverException) :
