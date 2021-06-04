@@ -40,6 +40,7 @@ A python script to automate downloads from animepahe.
   - Example: `1, 3, 6-11` : downloads episodes 1,3,6,7,8,9,10,11
   
 - **Downloading and Quality :**
+  - Files are downloaded to your Videos directory.
   - Downloads are taken care of by the inbuilt downloader on default.
   - Currently the download quality priority is as follows : [720p, 576p, 480p]
     - ie, downloader first checks for 720p video, if 720p is not available checks for 576p and so on.

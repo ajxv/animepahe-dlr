@@ -25,11 +25,6 @@ if download_with_idm:
     driver.install_addon(this_dir + os.path.sep + "driver_extensions" + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if prefered
 
 
-#add geckodriver path to PATH
-geckodriver_path = os.path.join(os.path.join(this_dir, "ap_dlr_modules"), "geckodriver")
-if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")) or os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
-    os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
-
 request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'}
 base_url = "https://animepahe.com"
 

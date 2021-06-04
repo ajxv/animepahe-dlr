@@ -14,6 +14,11 @@ this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is
 parent_dir = os.path.dirname(this_dir) #path to parent of current dir
 current_system_os = str(platform.system()) #get current os
 
+#add geckodriver path to PATH
+geckodriver_path = os.path.join(os.path.join(this_dir, "ap_dlr_modules"), "geckodriver")
+if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")) or os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
+    os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
+    
 #firefox-webdriver options
 options = FirefoxOptions()
 options.add_argument("--headless")
