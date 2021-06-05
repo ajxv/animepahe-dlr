@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.18',
+    version = '0.1.19',
     description = "A python script to automate downloads from animepahe",
     url = "https://github.com/ed-archer/animepahe-dlr",
     author = "ed-archer",
@@ -29,7 +29,7 @@ setup(
         'beautifulsoup4 >= 4.9.3',
         'selenium >= 3.141.0',
         'requests >= 2.25.1',
-        'clint >= 0.5.1',
+        'tqdm >= 4.61.0',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

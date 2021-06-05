@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import time
-from clint.textui import progress
+from tqdm import tqdm
 from ap_dlr_modules.initiate_driver import driver, WebDriverWait, EC, By
 
 def downloader(download_link, location):
@@ -40,6 +40,7 @@ def downloader(download_link, location):
         'Upgrade-Insecure-Requests': '1'
     }
 
+    #check if file alreay exists. If it does resume download if its incomplete.
     if os.path.exists(file):
         print("File already exists! Resuming download..")
         current_size = os.stat(file).st_size
@@ -48,15 +49,21 @@ def downloader(download_link, location):
     response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
     total_length = int(response.headers.get('content-length'))
 
+    if str(total_length) == "190":
+        size_in_mb = current_size/(1024*1024)
+        print(f"[#] {filename}: 100% - {size_in_mb:.1f}M/{size_in_mb:.1f}M")
+        time.sleep(5)
+        return
+
+    progress_bar = tqdm(unit="B", unit_scale=True, total=total_length, desc=f"[#] {filename}")
     with open(file, 'ab') as local_file:
-        for chunk in progress.bar(response.iter_content(chunk_size=1024),label = "[#] " + filename + " ", expected_size=(total_length/1024) + 1):
+        for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 local_file.write(chunk)
                 local_file.flush()
-
-    if str(total_length) == "190":
-        time.sleep(5)
-        return
+            # update the progress bar manually
+            progress_bar.update(len(chunk))
+    progress_bar.close() # close progress bar
 
 
 def download(download_link, location):
@@ -64,4 +71,5 @@ def download(download_link, location):
         downloader(download_link, location)
     except Exception as e:
         print(str(e.__class__) + " occured! Retrying..")
+        time.sleep(5)
         download(download_link, location)
