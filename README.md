@@ -18,7 +18,7 @@ A python script to automate downloads from animepahe.
 - Selenium
 - BeautifulSoup4
 - requests
-- clint
+- tqdm
 
 ## Getting Started
 1. Make sure you have Python and Firefox installed in your system
