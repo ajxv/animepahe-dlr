@@ -1,3 +1,4 @@
+from logging import exception
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -55,7 +56,7 @@ def downloader(download_link, location):
         time.sleep(5)
         return
 
-    progress_bar = tqdm(unit="B", unit_scale=True, total=total_length, desc=f"[#] {filename}")
+    progress_bar = tqdm(unit="B", unit_scale=True, total=total_length, desc=f"[#] {filename}", dynamic_ncols=True)
     with open(file, 'ab') as local_file:
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:

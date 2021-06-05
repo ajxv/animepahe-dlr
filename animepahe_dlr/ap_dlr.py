@@ -130,6 +130,8 @@ def get_download_link(episode_link, quality):
 
     links = [a for a in episode_page_soup.find_all('a', {'class': 'dropdown-item', 'target':'_blank'})]
     for a in links:
+        if "badge badge-warning" in str(a):
+            continue
         for q in quality:
             if a.text.find(q) != -1:
                 download_link = a['href']
