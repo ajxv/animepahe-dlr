@@ -5,16 +5,14 @@ with open("README.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.20',
+    version = '0.1.21',
     description = "A python script to automate downloads from animepahe",
     url = "https://github.com/ed-archer/animepahe-dlr",
     author = "ed-archer",
     license = "MIT",
     py_modules = [
         'ap_dlr',
-        'ap_dlr_modules.gecko_installer', 
-        'ap_dlr_modules.inbuilt_dlr', 
-        'ap_dlr_modules.initiate_driver',
+        'gecko_installer',
     ],
     package_dir = {'':'animepahe_dlr'},
     entry_points ={
@@ -23,7 +21,7 @@ setup(
 
     include_package_data=True,
     package_data={"animepahe_dlr.driver_extensions": ["*.xpi"]},
-    packages = ["driver_extensions", "ap_dlr_modules"],
+    packages = ["driver_extensions"],
     
     install_requires = [
         'beautifulsoup4 >= 4.9.3',
