@@ -6,7 +6,7 @@ import subprocess
 import re
 import os
 import platform
-import gecko_installer
+import gecko_installer #custom module
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.common.exceptions import WebDriverException
@@ -15,23 +15,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from tqdm import tqdm
 
-    
+# check command line args
+download_with_idm = False
 if len(sys.argv) > 1 and "-idm" in sys.argv:
     download_with_idm = True
-else:
-    download_with_idm = False
-
+    
 this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
 downloads_folder = os.path.expanduser("~") + os.path.sep + "Videos" + os.path.sep
 current_system_os = str(platform.system()) #get current os
 
-
 request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'}
 base_url = "https://animepahe.com"
-
-index_url = "https://animepahe.com/anime"
-index_page = requests.get(index_url, headers=request_header)
-index_soup = BeautifulSoup(index_page.content, 'html.parser')
 
 def banner():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -51,20 +45,16 @@ def initiate_driver():
     #add geckodriver path to PATH
     geckodriver_path = os.path.join(this_dir, "geckodriver")
 
-    if not os.path.exists(geckodriver_path):
+    if not os.path.exists(geckodriver_path): #check if geckodriver path already exists
         gecko_installer.install(this_dir) #installs and adds geckodriver to PATH
 
-    if current_system_os.lower() == "windows":
-        if os.path.exists(os.path.join(geckodriver_path, r"geckodriver.exe")):
-            os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
-    if current_system_os.lower() == "linux":
-        if os.path.exists(os.path.join(geckodriver_path, r"geckodriver")):
-            os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
+    # add geckodriver path to PATH (only for current terminal session)
+    os.environ['PATH'] = os.environ['PATH'] + os.pathsep + geckodriver_path
 
-    log_file = os.path.join(geckodriver_path, 'geckodriver.log')
     #firefox-webdriver options
     options = FirefoxOptions()
     options.add_argument("--headless")
+    gecko_log_file = os.path.join(geckodriver_path, 'geckodriver.log')
 
     if current_system_os.lower() == "windows": # we need this only in windows
         # get list of currently running firefox processes (for in case -- keyboardInterrupt occurs)
@@ -73,7 +63,7 @@ def initiate_driver():
 
     try:
         #initiate driver
-        driver = webdriver.Firefox(options=options, service_log_path=log_file)
+        driver = webdriver.Firefox(options=options, service_log_path=gecko_log_file)
 
     except WebDriverException as driverException:
         print(driverException)
@@ -87,7 +77,7 @@ def initiate_driver():
         driver.install_addon(firefox_extensions_dir + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if prefered
 
 
-def get_anime_list():
+def get_anime_list(index_soup):
     # get list of anime titles in webpage
     anime_list = []
     for tag in index_soup.find_all('a'):
@@ -101,7 +91,12 @@ def search_anime_title(anime_search_text):
             Searching for anime..
     ----------------------------------------
     ''')
-    anime_list = get_anime_list()
+    
+    index_url = "https://animepahe.com/anime"
+    index_page = requests.get(index_url, headers=request_header)
+    index_soup = BeautifulSoup(index_page.content, 'html.parser')
+
+    anime_list = get_anime_list(index_soup)
 
     # store a list of matching titles
     matching_titles = [s for s in anime_list if anime_search_text.lower() in s.lower()]
@@ -110,10 +105,16 @@ def search_anime_title(anime_search_text):
 
     # get selection from user
     select = int(input("select[#] : "))
-    print(f"selected : {str(matching_titles[select])}")
+    selected_anime_title = str(matching_titles[select])
+    print(f"selected : {selected_anime_title}")
 
-    return str(matching_titles[select])
+    # get link tail for selected anime
+    for atag in index_soup.find_all('a', title = selected_anime_title):
+        tail = atag['href']
 
+    anime_link = base_url + tail #link of anime-page
+
+    return selected_anime_title, anime_link
 def get_episode_links(anime_link):
     print('''
     ----------------------------------------
@@ -292,7 +293,7 @@ def create_folder(in_location, title, current_os):
 def graceful_exit(msg):
     if "progress_bar" in globals():
         progress_bar.close()
-        
+
     driver.quit()
     sys.exit(msg)
 
@@ -315,15 +316,9 @@ def main():
         tab_handler() #handles open tabs in webdriver
 
         anime_search_text = input("Search : ")
-        anime_title = search_anime_title(anime_search_text)
+        anime_title, anime_link = search_anime_title(anime_search_text)
 
         qualtiy = ["720p", "576p", "480p"]
-
-        # get link tail for selected anime
-        for atag in index_soup.find_all('a', title = anime_title):
-            tail = atag['href']
-
-        anime_link = base_url + tail #link of anime-page
 
         episode_links = get_episode_links(anime_link)
 
