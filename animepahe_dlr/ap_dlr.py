@@ -298,6 +298,9 @@ def graceful_exit(msg):
     sys.exit(msg)
 
 def winKeyInterruptHandler():
+    if "progress_bar" in globals():
+        progress_bar.close()
+        
     #find new firefox processes
     tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
     newFFIDs = set(re.findall(r"firefox.exe\s+(\d+)", tasklist)).difference(currentFFIDs)
