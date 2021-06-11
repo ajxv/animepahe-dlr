@@ -153,7 +153,7 @@ def choose_eps_to_dl(total_episodes):
             chosen.clear
             for j in range(1, total_episodes + 1):
                 chosen.append(j)
-            break
+            return chosen
         if "-" in choice[i]:
             r = choice[i].split('-')
             for j in range(int(r[0]), int(r[1]) + 1):
