@@ -99,6 +99,3 @@ def install(to_location):
         gecko_file = extract_tar_gz(gecko_pkg, geckodriver_dir) #extracts downloaded tar.gz file
 
     add_to_PATH(geckodriver_dir) #add geckodriver to path
-
-
-install(os.path.dirname(os.path.abspath(__file__)))
