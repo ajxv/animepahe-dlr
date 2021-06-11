@@ -1,3 +1,4 @@
-include *.txt *.md
-include animepahe_dlr/driver_extensions
+include *.in
+include *.txt
+recursive-include animepahe_dlr *.py
 recursive-include animepahe_dlr *.xpi
