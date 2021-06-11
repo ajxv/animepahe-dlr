@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.21.dev2',
+    version = '0.1.21.dev3',
     description = "A python script to automate downloads from animepahe",
     url = "https://github.com/ed-archer/animepahe-dlr",
     author = "ed-archer",
@@ -21,7 +21,10 @@ setup(
 
     include_package_data=True,
     package_data={"animepahe_dlr.driver_extensions": ["*.xpi"]},
-    packages = ["driver_extensions"],
+    packages = [
+        "animepahe-dlr",
+        "driver_extensions"
+    ],
     
     install_requires = [
         'beautifulsoup4 >= 4.9.3',
@@ -40,6 +43,5 @@ setup(
 
     long_description = long_description,
     long_description_content_type = "text/markdown",
-
 
 )
