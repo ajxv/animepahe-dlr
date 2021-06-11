@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = 'animepahe-dlr',
-    version = '0.1.21.dev3',
+    version = '0.1.21.dev7',
     description = "A python script to automate downloads from animepahe",
     url = "https://github.com/ed-archer/animepahe-dlr",
     author = "ed-archer",
@@ -14,16 +14,16 @@ setup(
         'ap_dlr',
         'gecko_installer',
     ],
-    package_dir = {'':'animepahe_dlr'},
+    package_dir = {'animepahe_dlr':'animepahe_dlr'},
     entry_points ={
-            'console_scripts': ['animepahe-dlr = ap_dlr:main']
+            'console_scripts': ['animepahe-dlr = animepahe_dlr.ap_dlr:main']
     },
 
     include_package_data=True,
     package_data={"animepahe_dlr.driver_extensions": ["*.xpi"]},
     packages = [
-        "animepahe-dlr",
-        "driver_extensions"
+        "animepahe_dlr",
+        "animepahe_dlr.driver_extensions"
     ],
     
     install_requires = [

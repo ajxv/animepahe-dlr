@@ -6,7 +6,6 @@ import subprocess
 import re
 import os
 import platform
-import gecko_installer #custom module
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.common.exceptions import WebDriverException
@@ -39,7 +38,6 @@ def banner():
     ''')
 
 def initiate_driver():
-    #parent_dir = os.path.dirname(this_dir) #path to parent of current dir
     global driver, currentFFIDs
 
     #add geckodriver path to PATH
@@ -364,6 +362,9 @@ def main():
 
 
 if __name__ == "__main__":
+    import gecko_installer #custom module
     main()
+else:
+    from animepahe_dlr import gecko_installer #custom module
 
     
