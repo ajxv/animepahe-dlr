@@ -196,6 +196,9 @@ def external_download(download_link):
     driver.find_element_by_xpath("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
 
     time.sleep(3) # wait for download to start
+def close_progress_bar():
+    if "progress_bar" in globals():
+        progress_bar.close()
 
 def downloader(download_link, location):
     driver.get(download_link)
@@ -263,6 +266,9 @@ def inbuilt_dlr(download_link, location):
     try:
         downloader(download_link, location)
     except Exception as e:
+        #exit progressbar if initiated
+        close_progress_bar()
+
         print(str(e.__class__) + " occured! Retrying..")
         time.sleep(5)
         inbuilt_dlr(download_link, location)
@@ -289,15 +295,15 @@ def create_folder(in_location, title, current_os):
     return new_folder
 
 def graceful_exit(msg):
-    if "progress_bar" in globals():
-        progress_bar.close()
+    #exit progress bar if initiated
+    close_progress_bar()
 
     driver.quit()
     sys.exit(msg)
 
 def winKeyInterruptHandler():
-    if "progress_bar" in globals():
-        progress_bar.close()
+    #exit progress bar if initiated
+    close_progress_bar()
         
     #find new firefox processes
     tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
