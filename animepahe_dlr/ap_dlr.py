@@ -122,6 +122,10 @@ def get_episode_links(anime_link):
 
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(anime_link)
+
+    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='btn-group btn-group-toggle']/label[contains(@class, 'btn')][contains(., 'asc')]")))
+    driver.find_element_by_xpath("//div[@class='btn-group btn-group-toggle']/label[contains(@class, 'btn')][contains(., 'asc')]").click()
+    
     links = []
     while 1:
         time.sleep(3)
@@ -196,6 +200,9 @@ def external_download(download_link):
     driver.find_element_by_xpath("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
 
     time.sleep(3) # wait for download to start
+def close_progress_bar():
+    if "progress_bar" in globals():
+        progress_bar.close()
 
 def downloader(download_link, location):
     driver.get(download_link)
@@ -217,7 +224,7 @@ def downloader(download_link, location):
 
     header = {
         'Host': 'kwik.cx',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -263,6 +270,9 @@ def inbuilt_dlr(download_link, location):
     try:
         downloader(download_link, location)
     except Exception as e:
+        #exit progressbar if initiated
+        close_progress_bar()
+
         print(str(e.__class__) + " occured! Retrying..")
         time.sleep(5)
         inbuilt_dlr(download_link, location)
@@ -289,15 +299,15 @@ def create_folder(in_location, title, current_os):
     return new_folder
 
 def graceful_exit(msg):
-    if "progress_bar" in globals():
-        progress_bar.close()
+    #exit progress bar if initiated
+    close_progress_bar()
 
     driver.quit()
     sys.exit(msg)
 
 def winKeyInterruptHandler():
-    if "progress_bar" in globals():
-        progress_bar.close()
+    #exit progress bar if initiated
+    close_progress_bar()
         
     #find new firefox processes
     tasklist = subprocess.check_output(['tasklist', '/fi', 'imagename eq firefox.exe'], shell=True).decode()
