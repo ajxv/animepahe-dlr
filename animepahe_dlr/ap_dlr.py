@@ -122,6 +122,10 @@ def get_episode_links(anime_link):
 
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(anime_link)
+
+    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='btn-group btn-group-toggle']/label[contains(@class, 'btn')][contains(., 'asc')]")))
+    driver.find_element_by_xpath("//div[@class='btn-group btn-group-toggle']/label[contains(@class, 'btn')][contains(., 'asc')]").click()
+    
     links = []
     while 1:
         time.sleep(3)
