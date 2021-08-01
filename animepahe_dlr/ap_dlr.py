@@ -23,8 +23,8 @@ this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is
 downloads_folder = os.path.expanduser("~") + os.path.sep + "Videos" + os.path.sep
 current_system_os = str(platform.system()) #get current os
 
-request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'}
-base_url = "https://animepahe.com"
+request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0'}
+base_url = "https://animepahe.org"
 
 def banner():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -224,7 +224,7 @@ def downloader(download_link, location):
 
     header = {
         'Host': 'kwik.cx',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
         'Accept-Encoding': 'gzip, deflate, br',
