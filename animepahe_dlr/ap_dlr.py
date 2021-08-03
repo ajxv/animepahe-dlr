@@ -19,26 +19,51 @@ download_with_idm = False
 if len(sys.argv) > 1 and "-idm" in sys.argv:
     download_with_idm = True
     
-this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
-downloads_folder = os.path.expanduser("~") + os.path.sep + "Videos" + os.path.sep
 current_system_os = str(platform.system()) #get current os
 
-request_header = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0'}
-base_url = "https://animepahe.org"
+#class to store all required details of selected anime
+class anime:
+    selected = None
+    id = None
+    episode_count = None
+    episode_sessions = {}
+    eps_to_dl = None
+    download_location = None
 
-def banner():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print('''
-                 _                            _                   _ _      
-      __ _ _ __ (_)_ __ ___   ___ _ __   __ _| |__   ___       __| | |_ __ 
-     / _` | '_ \| | '_ ` _ \ / _ \ '_ \ / _` | '_ \ / _ \____ / _` | | '__|
-    | (_| | | | | | | | | | |  __/ |_) | (_| | | | |  __/____| (_| | | |   
-     \__,_|_| |_|_|_| |_| |_|\___| .__/ \__,_|_| |_|\___|     \__,_|_|_|   
-                                 |_|                                        
-    ''')
+class banners:
+    def banner():
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print('''
+                     _                            _                   _ _      
+          __ _ _ __ (_)_ __ ___   ___ _ __   __ _| |__   ___       __| | |_ __ 
+         / _` | '_ \| | '_ ` _ \ / _ \ '_ \ / _` | '_ \ / _ \____ / _` | | '__|
+        | (_| | | | | | | | | | |  __/ |_) | (_| | | | |  __/____| (_| | | |   
+         \__,_|_| |_|_|_| |_| |_|\___| .__/ \__,_|_| |_|\___|     \__,_|_|_|   
+                                     |_|                                        
+        ''')
+    def searching():
+        print('''
+        ----------------------------------------
+                Searching for anime..
+        ----------------------------------------
+        ''')
+    def start_dl():
+        print('''
+        ----------------------------------------
+                Starting Downloads..
+        ----------------------------------------
+        ''')
+    def downloading():
+        print('''
+        ----------------------------------------
+                    Downloading..
+        ----------------------------------------
+        ''')
 
-def initiate_driver():
+def initiate_driver(): 
     global driver, currentFFIDs
+
+    this_dir = os.path.dirname(os.path.abspath(__file__)) #path where this script is stored
 
     #add geckodriver path to PATH
     geckodriver_path = os.path.join(this_dir, "geckodriver")
@@ -69,76 +94,52 @@ def initiate_driver():
     firefox_extensions_dir = this_dir + os.path.sep + "driver_extensions"
     #Load add-ons to webdriver
     driver.install_addon(firefox_extensions_dir + os.path.sep + "universal-bypass.xpi", temporary=True)
-    driver.install_addon(firefox_extensions_dir + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
-    #add idm add-on only if download with idm is selected
+    #add-ons required only if download with idm is selected
     if download_with_idm:
+        driver.install_addon(firefox_extensions_dir + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
         driver.install_addon(firefox_extensions_dir + os.path.sep + "mozilla_cc3@internetdownloadmanager.com.xpi", temporary=True) # use idm if prefered
 
 
-def get_anime_list(index_soup):
-    # get list of anime titles in webpage
-    anime_list = []
-    for tag in index_soup.find_all('a'):
-        anime_list.append(tag.text)
-    return anime_list
+def search_anime_index(search_text, index_url = "https://animepahe.com/anime"):
 
-def search_anime_title(anime_search_text):
-    # search for anime title
-    print('''
-    ----------------------------------------
-            Searching for anime..
-    ----------------------------------------
-    ''')
+    banners.searching()
+
+    index_page = requests.get(index_url)
+    index_page_soup = BeautifulSoup(index_page.content, 'html.parser')
+
+    #find all anime entries listed in the index page
+    anime_index_list = [tag_item for tag_item in index_page_soup.find_all('a') if "/anime/" in tag_item['href']]
+
+    #search anime_index_list for matching anime titles
+    matched_titles = [item for item in anime_index_list if search_text in item.text.lower()]
+
+    for i, anime in enumerate(matched_titles):
+        print(f"[{i}] {anime['title']}")
     
-    index_url = "https://animepahe.com/anime"
-    index_page = requests.get(index_url, headers=request_header)
-    index_soup = BeautifulSoup(index_page.content, 'html.parser')
+    choice = int(input("Select[#] : "))
 
-    anime_list = get_anime_list(index_soup)
+    return matched_titles[choice]
 
-    # store a list of matching titles
-    matching_titles = [s for s in anime_list if anime_search_text.lower() in s.lower()]
-    for i, title in enumerate(matching_titles):
-        print(f"[{i}] {title}")
+def get_episode_sessions(anime_link, anime_title):
+    anime_link = "https://animepahe.com" + anime_link
 
-    # get selection from user
-    select = int(input("select[#] : "))
-    selected_anime_title = str(matching_titles[select])
-    print(f"selected : {selected_anime_title}")
+    anime_page = requests.get(anime_link)
+    anime_page_soup = BeautifulSoup(anime_page.content, 'html.parser')
 
-    # get link tail for selected anime
-    for atag in index_soup.find_all('a', title = selected_anime_title):
-        tail = atag['href']
+    #get anime id
+    anime.id = int(anime_page_soup.find('a', text=anime_title)['href'].split("/")[-1])
 
-    anime_link = base_url + tail #link of anime-page
+    anime_meta = requests.get(f"https://animepahe.com/api?m=release&id={anime.id}").json()
 
-    return selected_anime_title, anime_link
-def get_episode_links(anime_link):
-    print('''
-    ----------------------------------------
-            Getting episode links...
-    ----------------------------------------
-    ''')
+    #get anime metadata
+    anime.episode_count, page_count = anime_meta['total'], anime_meta['last_page']
 
-    # getting dynamic-page source using selenium-firefox-driver
-    driver.get(anime_link)
+    for page_no in range(1, page_count + 1):
+        anime_json = requests.get(f"https://animepahe.com/api?m=release&id={anime.id}&sort=episode_asc&page={page_no}").json()
+        ep_in_page = anime_json['to'] - anime_json['from'] + 1 #no.of eps in page
 
-    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='btn-group btn-group-toggle']/label[contains(@class, 'btn')][contains(., 'asc')]")))
-    driver.find_element_by_xpath("//div[@class='btn-group btn-group-toggle']/label[contains(@class, 'btn')][contains(., 'asc')]").click()
-    
-    links = []
-    while 1:
-        time.sleep(3)
-        anime_page = driver.page_source
-        anime_page_soup = BeautifulSoup(anime_page, 'html.parser')
-        
-        links += [base_url + a['href'] for a in anime_page_soup.find_all('a', {"class" : "play"})]
-
-        try:
-            driver.find_element_by_xpath("//li[@class = 'page-item']/a[contains(@class, 'next-page')]").click()
-        except: 
-            break
-    return links
+        for ep in range(ep_in_page):
+            anime.episode_sessions[anime_json['data'][ep]['episode']] = anime_json['data'][ep]['session']
 
 def choose_eps_to_dl(total_episodes):
     print(f"No. of episodes : {total_episodes}\n")
@@ -165,30 +166,6 @@ def choose_eps_to_dl(total_episodes):
 
     return chosen
 
-def get_download_link(episode_link, quality):
-
-    # getting dynamic-page source using selenium-firefox-driver
-    driver.get(episode_link)
-
-    time.sleep(2)
-
-    episode_page = driver.page_source
-    episode_page_soup = BeautifulSoup(episode_page, 'html.parser')
-
-    links = [a for a in episode_page_soup.find_all('a', {'class': 'dropdown-item', 'target':'_blank'})]
-    for a in links:
-        if "badge badge-warning" in str(a):
-            continue
-        for q in quality:
-            if a.text.find(q) != -1:
-                download_link = a['href']
-                break
-    
-    if "download_link" in locals():
-        return download_link
-    else:
-        graceful_exit("Error while getting download_link :(") #exit gracefully
-
 def external_download(download_link):
     # getting dynamic-page source using selenium-firefox-driver
     driver.get(download_link)
@@ -200,6 +177,7 @@ def external_download(download_link):
     driver.find_element_by_xpath("//form[@method = 'POST']/button[contains(@class, 'button')]").click()
 
     time.sleep(3) # wait for download to start
+
 def close_progress_bar():
     if "progress_bar" in globals():
         progress_bar.close()
@@ -242,13 +220,19 @@ def downloader(download_link, location):
     if os.path.exists(file):
         print("File already exists! Resuming download..")
         current_size = os.stat(file).st_size
+        size_in_mb = current_size/(1024*1024)
         header.update( {'Range':'bytes=%d-' %current_size} )
-    
+
     response = requests.post(post_link, headers=header, data = {'_token': token}, stream=True)
-    total_length = int(response.headers.get('content-length'))
+    try:
+        total_length = int(response.headers.get('content-length'))
+    except TypeError:
+        if current_size > 190:
+            print(f"[#] {filename}: ??% - {size_in_mb:.1f}M/??M (Unexpected error: Skipping file)")
+            time.sleep(5)
+            return
 
     if str(total_length) == "190":
-        size_in_mb = current_size/(1024*1024)
         print(f"[#] {filename}: 100% - {size_in_mb:.1f}M/{size_in_mb:.1f}M")
         time.sleep(5)
         return
@@ -273,9 +257,29 @@ def inbuilt_dlr(download_link, location):
         #exit progressbar if initiated
         close_progress_bar()
 
-        print(str(e.__class__) + " occured! Retrying..")
+        print(f"{str(e.__class__)} occured! Retrying..")
         time.sleep(5)
         inbuilt_dlr(download_link, location)
+
+def start_downloads(episode_sessions, quality=['720', '1080', '576', '480']):
+    if download_with_idm:
+        banners.start_dl()
+    else:
+        banners.downloading()
+
+    for ep in anime.eps_to_dl:
+        if ep not in episode_sessions: 
+            continue
+
+        episode_json = requests.get(f"https://animepahe.com/api?m=links&id={anime.id}&session={episode_sessions[ep]}").json()
+        for res in quality:
+            if res not in episode_json["data"][0]:
+                continue
+            if download_with_idm:
+                external_download(episode_json['data'][0][res]['kwik_adfly']) #link to dl-page
+            inbuilt_dlr(episode_json['data'][0][res]['kwik_adfly'], anime.download_location)
+            
+    graceful_exit("All downloads Completed !!")
 
 def tab_handler():
     #clear all tab except main tab
@@ -285,14 +289,14 @@ def tab_handler():
 
     driver.switch_to.window(driver.window_handles[0]) #switch back to main tab
 
-def create_folder(in_location, title, current_os):
+def create_folder(folder_name, folder_location = os.path.expanduser("~") + os.path.sep + "Videos" + os.path.sep, current_os = str(platform.system())):
     if current_os.lower() == "windows":
-        foldername = re.sub('[/\:*?<>|]', ' ', title)
+        foldername = re.sub('[/\:*?<>|]', ' ', folder_name)
     elif current_os.lower() == "linux":
-        foldername = re.sub('[/]', ' ', title)
+        foldername = re.sub('[/]', ' ', folder_name)
 
     #make a new folder to download to (if one doesn't already exist)
-    new_folder = os.path.join(in_location, foldername)
+    new_folder = os.path.join(folder_location, foldername)
     if not os.path.exists(new_folder):
         os.makedirs(new_folder)
         
@@ -301,7 +305,6 @@ def create_folder(in_location, title, current_os):
 def graceful_exit(msg):
     #exit progress bar if initiated
     close_progress_bar()
-
     driver.quit()
     sys.exit(msg)
 
@@ -322,45 +325,30 @@ def winKeyInterruptHandler():
 
 def main():
     try:
-        banner() #displays banner
+        banners.banner() #displays banner
         initiate_driver() #initiate webdriver
         tab_handler() #handles open tabs in webdriver
 
         anime_search_text = input("Search : ")
-        anime_title, anime_link = search_anime_title(anime_search_text)
 
-        qualtiy = ["720p", "576p", "480p"]
+        #search for anime in anime-index-page
+        anime.selected = search_anime_index(anime_search_text)
+        
+        print(f"\nSelected: {anime.selected.text}")
 
-        episode_links = get_episode_links(anime_link)
+        #get episode-sessions from api json response
+        get_episode_sessions(anime.selected['href'], anime.selected.text)
 
-        if not episode_links:
+        if not anime.episode_sessions:
             graceful_exit("Couldln't find any episode links")
         
-        episode_choice = choose_eps_to_dl(len(episode_links))
+        anime.eps_to_dl = choose_eps_to_dl(anime.episode_count)
         
-        if download_with_idm:
-            print('''
-        ----------------------------------------
-                Starting Downloads..
-        ----------------------------------------
-        ''')
-            for ep in episode_choice:
-                download_link = get_download_link(episode_links[ep - 1], qualtiy)
-                external_download(download_link)
-                
-            graceful_exit("\nAll Downloads Started !!") #exit gracefully
-        else:
-            print('''
-        ----------------------------------------
-                    Downloading..
-        ----------------------------------------
-        ''')
-            anime_folder = create_folder(downloads_folder, anime_title, current_system_os)
-            for ep in episode_choice:
-                download_link = get_download_link(episode_links[ep - 1], qualtiy)
-                inbuilt_dlr(download_link, anime_folder)
-
-            graceful_exit("\nAll Downloads Completed !!") #exit gracefully
+        if not download_with_idm:
+            anime.download_location = create_folder(anime.selected.text)
+        
+        #start all downloads
+        start_downloads(anime.episode_sessions)
 
     except KeyboardInterrupt:
         if current_system_os.lower() == "windows": #needed only if in windows
