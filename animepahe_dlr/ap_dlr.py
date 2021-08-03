@@ -293,11 +293,18 @@ def start_downloads(episode_sessions, quality=['720', '1080', '576', '480', '360
 
         episode_json = requests.get(f"https://animepahe.com/api?m=links&id={anime.id}&session={episode_sessions[ep]}").json()
         for res in quality:
-            if res not in episode_json["data"][0]:
-                continue
-            if download_with_idm:
-                external_download(episode_json['data'][0][res]['kwik_adfly']) #link to dl-page
-            inbuilt_dlr(episode_json['data'][0][res]['kwik_adfly'], anime.download_location)
+            flag = False
+            for i in range(len(episode_json['data'])):
+                if res not in episode_json["data"][i]:
+                    continue
+                if download_with_idm:
+                    external_download(episode_json['data'][i][res]['kwik_adfly']) #link to dl-page
+                inbuilt_dlr(episode_json['data'][i][res]['kwik_adfly'], anime.download_location)
+                flag = True
+                break
+            if flag == True:
+                break
+        
             
     graceful_exit("All downloads Completed !!")
 
