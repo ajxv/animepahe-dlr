@@ -47,6 +47,12 @@ class banners:
                 Searching for anime..
         ----------------------------------------
         ''')
+    def getting_eps():
+        print('''
+        ----------------------------------------
+                Getting episode links...
+        ----------------------------------------
+        ''')
     def start_dl():
         print('''
         ----------------------------------------
@@ -113,14 +119,28 @@ def search_anime_index(search_text, index_url = "https://animepahe.com/anime"):
     #search anime_index_list for matching anime titles
     matched_titles = [item for item in anime_index_list if search_text in item.text.lower()]
 
+    #return if no anime found
+    if not matched_titles:
+        banners.banner()
+        print("No matching anime found. Retry!")
+        return
+
+    print("Result:")
     for i, anime in enumerate(matched_titles):
-        print(f"[{i}] {anime['title']}")
-    
-    choice = int(input("Select[#] : "))
+        print(f"  [{i}] {anime['title']}")
+    print("") #blank-line
+
+    choice = -1
+    while(choice not in range(len(matched_titles))):
+        try:
+            choice = int(input("Select[#] : "))
+        except ValueError:
+            choice = -1
 
     return matched_titles[choice]
 
 def get_episode_sessions(anime_link, anime_title):
+    banners.getting_eps()
     anime_link = "https://animepahe.com" + anime_link
 
     anime_page = requests.get(anime_link)
@@ -261,7 +281,7 @@ def inbuilt_dlr(download_link, location):
         time.sleep(5)
         inbuilt_dlr(download_link, location)
 
-def start_downloads(episode_sessions, quality=['720', '1080', '576', '480']):
+def start_downloads(episode_sessions, quality=['720', '1080', '576', '480', '360']):
     if download_with_idm:
         banners.start_dl()
     else:
@@ -329,10 +349,12 @@ def main():
         initiate_driver() #initiate webdriver
         tab_handler() #handles open tabs in webdriver
 
-        anime_search_text = input("Search : ")
-
-        #search for anime in anime-index-page
-        anime.selected = search_anime_index(anime_search_text)
+        while(not anime.selected):
+            anime_search_text = input("Search [q: quit]: ")
+            if anime_search_text == 'q':
+                graceful_exit("Exiting..")
+            #search for anime in anime-index-page
+            anime.selected = search_anime_index(anime_search_text)
         
         print(f"\nSelected: {anime.selected.text}")
 
