@@ -49,11 +49,10 @@ A python script to automate downloads from animepahe.
 - **Downloading and Quality :**
   - Files are downloaded to your Videos directory.
   - Downloads are taken care of by the inbuilt downloader on default.
-  - Currently the download quality priority is as follows : [720p, 576p, 480p]
-    - ie, downloader first checks for 720p video, if 720p is not available checks for 576p and so on.
-    - If you are building from source and want to download anime in 1080p, open up 'ap-dlr.py' in any editor and add 1080p to the begining of the list defined using 'quality' variable in the code. 
+  - Currently the download quality priority is as follows : [720p, 1080p, 576p, 480p, 360p]
+    - ie, downloader first checks for 720p video, if 720p is not available checks for 1080p and so on.
 
 ## Notes
-- Make sure you have python, Firefox (and IDM, if you want idm to capture downlads) installed before downloading the script.
+- Firefox needs to be installed for this script to work (since the script uses selenium for some of its functions).
 - This script is a work under progress and therefore may lack some features, please bear with it, and consider contributing if you have any fixes or improvements :relaxed:. 
 - **In Windows** the webdriver if found to misbehave if the script is forced to exit using `ctrl^c`. A good solution to this couldn't be found and a temporary fix have been implemented. And as such, please be noted that if you use ctrl^c to exit, your active firefox sessions or tabs have a good chance of crashing. (Note: ctrl^c doesn't have any issues in Linux)
