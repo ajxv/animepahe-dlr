@@ -325,10 +325,6 @@ class ApaheDownloader():
         self.driver.switch_to.window(self.driver.window_handles[0]) ## switch back to main tab
 
     def graceful_exit(self, msg):
-        ## if currentFFIDs not none
-        if self.currentFFIDs:
-           return self.winKeyInterruptHandler()
-        ## 
         ## exit progress bar (might misbehave if not closed)
         self.close_progress_bar()
         self.driver.quit()
@@ -397,6 +393,9 @@ def main():
         dlr.start_downloads(anime.episode_sessions)
 
     except KeyboardInterrupt:
+        if dlr.current_system_os.lower() == "windows":
+            return dlr.winKeyInterruptHandler()
+
         dlr.graceful_exit("\nKeyboardInterrupt : Exiting Gracefully..") ## exit gracefully
     except Exception as e:
         dlr.graceful_exit(f"Oops! {str(e.__class__)} occured.")
