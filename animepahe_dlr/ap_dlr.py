@@ -125,7 +125,7 @@ class ApaheDownloader():
         anime_index_list = [tag_item for tag_item in index_page_soup.find_all('a') if "/anime/" in tag_item['href']]
 
         ## search anime_index_list for matching anime titles
-        matched_titles = [item for item in anime_index_list if search_text in item.text.lower()]
+        matched_titles = [item for item in anime_index_list if search_text.lower() in item.text.lower()]
 
         ## return if no anime found
         if not matched_titles:
