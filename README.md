@@ -1,3 +1,7 @@
+```diff
+! animepahe-dlr doesn't work anymore as all domains adopted cloudlflare ddos guard.
+# will update when a solution is found
+```
 <!-- Badges -->
 [![PyPI version](https://badge.fury.io/py/animepahe-dlr.svg)](https://pypi.org/project/animepahe-dlr/)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/ed-archer/animepahe-dlr/)
