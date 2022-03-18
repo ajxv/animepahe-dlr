@@ -82,7 +82,8 @@ def initiate_driver():
 
     #firefox-webdriver options
     options = FirefoxOptions()
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
+    
     gecko_log_file = os.path.join(geckodriver_path, 'geckodriver.log')
 
     if current_system_os.lower() == "windows": # we need this only in windows
@@ -97,9 +98,12 @@ def initiate_driver():
     except WebDriverException as driverException:
         print(driverException)
 
+    #Remove navigator.webdriver Flag using JavaScript
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    
     firefox_extensions_dir = this_dir + os.path.sep + "driver_extensions"
     #Load add-ons to webdriver
-    driver.install_addon(firefox_extensions_dir + os.path.sep + "universal-bypass.xpi", temporary=True)
+    driver.install_addon(firefox_extensions_dir + os.path.sep + "addon@fastforward.team.xpi", temporary=True)
     #add-ons required only if download with idm is selected
     if download_with_idm:
         driver.install_addon(firefox_extensions_dir + os.path.sep + "uBlock0@raymondhill.net.xpi", temporary=True)
@@ -204,6 +208,8 @@ def close_progress_bar():
 
 def downloader(download_link, location):
     driver.get(download_link)
+    time.sleep(10)
+    driver.find_element_by_xpath("//a[@class='btn btn-secondary btn-block redirect']").click()
     #wait for elements to load
     WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//form[@method = 'POST']/button[contains(@class, 'button')]")))
 
@@ -298,8 +304,8 @@ def start_downloads(episode_sessions, quality=['720', '1080', '576', '480', '360
                 if res not in episode_json["data"][i]:
                     continue
                 if download_with_idm:
-                    external_download(episode_json['data'][i][res]['kwik_adfly']) #link to dl-page
-                inbuilt_dlr(episode_json['data'][i][res]['kwik_adfly'], anime.download_location)
+                    external_download(episode_json['data'][i][res]['kwik_pahewin']) #link to dl-page
+                inbuilt_dlr(episode_json['data'][i][res]['kwik_pahewin'], anime.download_location)
                 flag = True
                 break
             if flag == True:
@@ -332,7 +338,7 @@ def create_folder(folder_name, folder_location = os.path.expanduser("~") + os.pa
 def graceful_exit(msg):
     #exit progress bar if initiated
     close_progress_bar()
-    driver.quit()
+    # driver.quit()
     sys.exit(msg)
 
 def winKeyInterruptHandler():

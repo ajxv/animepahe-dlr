@@ -1,6 +1,6 @@
 ```diff
-! animepahe-dlr seem to be running into a lot of error lately.
-# will update when a solution is found
+! animepahe-dlr is broken.
+# :)
 ```
 <!-- Badges -->
 [![PyPI version](https://badge.fury.io/py/animepahe-dlr.svg)](https://pypi.org/project/animepahe-dlr/)
